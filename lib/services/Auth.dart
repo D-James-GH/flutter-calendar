@@ -60,6 +60,8 @@ class AuthService {
     DocumentReference usersRef = _db.collection('users').doc(user.uid);
     return usersRef.set({
       'uid': user.uid,
+      'displayName': user.displayName,
+      'email': user.email,
     }, SetOptions(merge: true));
   }
 

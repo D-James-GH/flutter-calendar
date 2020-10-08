@@ -1,4 +1,6 @@
-  class Event {
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class EventModel {
   final String title;
   final String notes;
   final String dateID;
@@ -6,7 +8,7 @@
   final List members;
   final String eventID;
 
-  Event({
+  EventModel({
     this.notes,
     this.dateID,
     this.time,
@@ -15,8 +17,8 @@
     this.members,
   });
 
-  factory Event.fromMap(Map<String, dynamic> data) {
-    return Event(
+  factory EventModel.fromMap(Map<String, dynamic> data) {
+    return EventModel(
       title: data['title'],
       notes: data['notes'] ?? '',
       dateID: data['date'] ?? '',
@@ -37,27 +39,48 @@
   }
 }
 
-// class DayData {
-//   final List<Event> events;
-//   final String dateID;
+class MessageModel {
+  final String text;
+  final String sentBy;
+  bool seen;
+  DateTime sentTime;
 
-//   DayData({
-//     this.events,
-//     this.dateID,
-//   });
+  MessageModel({this.text, this.sentBy, this.seen, this.sentTime});
 
-//   factory DayData.fromFirestore(DocumentSnapshot doc) {
-//     Map data = doc.data();
-//     return DayData(
-//       dateID: doc.id,
-//       events: data['events'],
-//     );
-//   }
-//   factory DayData.fromMap(Map data) {
-//     return DayData(
-//       dateID: data['dateID'],
-//       events: (data['events'] as List).map((e) => Event.fromMap(e)).toList(),
-//       // .map((e) => Event.fromMap(e)).toList(),
-//     );
-//   }
-// }
+  factory MessageModel.fromMap(Map<String, dynamic> data) {
+    Timestamp _timeFromDB = data['sentTime'];
+    DateTime _time = _timeFromDB.toDate();
+    return MessageModel(
+      text: data['text'] ?? '',
+      sentBy: data['sentBy'] ?? '',
+      seen: data['seen'] ?? false,
+      sentTime: _time ?? DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'text': text,
+      'sentBy': sentBy,
+      'seen': seen,
+      'sentTime': sentTime,
+    };
+  }
+}
+
+class ChatModel {
+  final String latestMessage;
+  final Map members;
+  final String chatID;
+
+  ChatModel({this.latestMessage, this.members, this.chatID});
+
+  factory ChatModel.fromFirestore(DocumentSnapshot snap) {
+    Map<String, dynamic> data = snap.data();
+    return ChatModel(
+      chatID: snap.id,
+      latestMessage: data['latestMessage'] ?? '',
+      members: data['members'] ?? {'': ''},
+    );
+  }
+}

@@ -44,7 +44,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   void onSubmit(BuildContext context) {
     String eventID = Uuid().v4();
     User user = Provider.of<User>(context, listen: false);
-    Event newEvent = Event(
+    EventModel newEvent = EventModel(
       title: _title,
       notes: _notes,
       time: _stringTime,

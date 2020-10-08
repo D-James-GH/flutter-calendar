@@ -1,23 +1,13 @@
-import 'dart:developer';
-import 'package:provider/provider.dart';
+import 'package:flutter_calendar/helpers/navService.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/screens/UnfoundRoute.dart';
-import 'package:flutter_calendar/screens/calendar/WeekCell.dart';
-
+import '../SomethingWentWrong.dart';
 import 'allCalendarScreens.dart';
 
-class CalendarHome extends StatefulWidget {
-  CalendarHome({Key key}) : super(key: key);
-
-  @override
-  _CalendarHomeState createState() => _CalendarHomeState();
-}
-
-class _CalendarHomeState extends State<CalendarHome> {
+class CalendarNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      key: Provider.of<GlobalKey<NavigatorState>>(context, listen: false),
+      key: NavService.calendarNavState,
       onGenerateRoute: (RouteSettings settings) {
         return MaterialPageRoute(
             settings: settings,
@@ -37,7 +27,7 @@ class _CalendarHomeState extends State<CalendarHome> {
                   );
                   break;
                 default:
-                  return UnfoundRoute();
+                  return SomethingWentWrong();
               }
             });
       },

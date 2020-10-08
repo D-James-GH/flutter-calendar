@@ -1,7 +1,7 @@
-export 'calendar/calendarHome.dart';
-export 'calendar/AddEventScreen.dart';
-export 'calendar/DayViewScreen.dart';
-export 'Profile.dart';
+export '../screens/calendar/calendarNavigator.dart';
+export '../screens/calendar/AddEventScreen.dart';
+export '../screens/calendar/DayViewScreen.dart';
+export 'profile/Profile.dart';
 export 'Login.dart';
-export 'Home.dart';
-export 'chat/ChatHome.dart';
+export '../screens/Home.dart';
+export '../screens/chat/chatNavigator.dart';

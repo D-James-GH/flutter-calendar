@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/helpers/navService.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_calendar/services/db.dart';
 import 'package:flutter_calendar/services/models.dart';
@@ -28,8 +29,7 @@ class WeekCell extends StatelessWidget {
   }
 
   void selectDay({context, month, date, events}) {
-    var _navState =
-        Provider.of<GlobalKey<NavigatorState>>(context, listen: false);
+    var _navState = NavService.calendarNavState;
     print(events);
     _navState.currentState.pushNamed(
       '/dayView',
@@ -48,7 +48,7 @@ class WeekCell extends StatelessWidget {
     final date = DateFormat.d().format(dateObject);
     UserData userData = UserData();
 
-    return StreamBuilder<List<Event>>(
+    return StreamBuilder<List<EventModel>>(
         stream: userData.eventStream(dateID),
         builder: (context, snapshot) {
           var events = snapshot.data;

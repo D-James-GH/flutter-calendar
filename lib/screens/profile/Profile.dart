@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
-import '../services/Auth.dart';
+import '../../services/Auth.dart';
 import '../shared/BottomNav.dart';
 
 class Profile extends StatelessWidget {
@@ -21,7 +21,7 @@ class Profile extends StatelessWidget {
             child: Text('Logout'),
             onPressed: () async {
               await auth.signOut();
-              Navigator.of(context)
+              Navigator.of(context, rootNavigator: true)
                   .pushNamedAndRemoveUntil('/', (route) => false);
             },
           ),

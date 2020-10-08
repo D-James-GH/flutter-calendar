@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/helpers/navService.dart';
 import 'package:provider/provider.dart';
 import '../../services/models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,7 +14,7 @@ class DayView extends StatefulWidget {
   final String day;
   final String month;
   final String dateID;
-  final List<Event> events;
+  final List<EventModel> events;
 
   DayView(
       {@required this.day,
@@ -26,7 +27,7 @@ class DayView extends StatefulWidget {
 }
 
 class _DayViewState extends State<DayView> {
-  List<Event> eventState = [];
+  List<EventModel> eventState = [];
   @override
   Widget build(BuildContext context) {
     eventState = widget.events;
@@ -72,17 +73,18 @@ class _DayViewState extends State<DayView> {
   }
 
   void _addEvent(BuildContext context) {
-    var _navState =
-        Provider.of<GlobalKey<NavigatorState>>(context, listen: false);
-    _navState.currentState.push(MaterialPageRoute(builder: (_) {
-      return AddEventScreen(
-        dateID: widget.dateID,
-        addNewEventToState: addNewEventToState,
-      );
-    }));
+    var _navState = NavService.calendarNavState;
+    _navState.currentState.push(MaterialPageRoute(
+        settings: RouteSettings(name: 'addEvent'),
+        builder: (_) {
+          return AddEventScreen(
+            dateID: widget.dateID,
+            addNewEventToState: addNewEventToState,
+          );
+        }));
   }
 
-  void addNewEventToState(Event newEvent) {
+  void addNewEventToState(EventModel newEvent) {
     this.setState(() {
       eventState.add(newEvent);
     });

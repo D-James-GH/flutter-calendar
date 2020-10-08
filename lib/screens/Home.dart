@@ -1,21 +1,29 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/helpers/navService.dart';
+import 'package:flutter_calendar/screens/profile/profileNavigator.dart';
 import 'package:provider/provider.dart';
-import 'screens.dart';
-import '../shared/BottomNav.dart';
+import '../screens/screens.dart';
+import 'shared/BottomNav.dart';
 
-GlobalKey<NavigatorState> _calendarNavKey = GlobalKey<NavigatorState>();
-
+// GlobalKey<NavigatorState> _calendarNavKey = GlobalKey<NavigatorState>();
 class Home extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => HomeState();
 }
 
 class HomeState extends State<Home> {
-  int _currentViewIndex = 0;
-  void _setCurrentViewIndex(int index) {
-    setState(() => _currentViewIndex = index);
+  int _currentTabIndex = 0;
+
+  Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {
+    0: NavService.calendarNavState,
+    1: NavService.chatNavState,
+    2: NavService.profileNavState,
+  };
+
+  void _setCurrentTab(int index) {
+    setState(() {
+      _currentTabIndex = index;
+    });
   }
 
   @override
@@ -23,32 +31,35 @@ class HomeState extends State<Home> {
     return WillPopScope(
       onWillPop: () async {
         final isFirstRouteInCurrentTab =
-            !await _calendarNavKey.currentState.maybePop();
+            !await _navigatorKeys[_currentTabIndex].currentState.maybePop();
         if (isFirstRouteInCurrentTab) {
-          if (_currentViewIndex != 0) {
-            setState(() => _currentViewIndex = 0);
+          if (_currentTabIndex != 0) {
+            setState(() {
+              _currentTabIndex = 0;
+            });
             return false;
           }
         }
         return isFirstRouteInCurrentTab;
       },
-      child: Provider(
-        create: (context) => _calendarNavKey,
-        child: Scaffold(
-          body: IndexedStack(
-            index: _currentViewIndex,
-            children: [
-              CalendarHome(),
-              ChatHome(),
-              Profile(),
-            ],
-          ),
-          bottomNavigationBar: BottomNav(
-            setCurrentViewIndex: _setCurrentViewIndex,
-            currentIndex: _currentViewIndex,
-          ),
+      child: Scaffold(
+        body: IndexedStack(
+          index: _currentTabIndex,
+          children: _buildTabs(),
+        ),
+        bottomNavigationBar: BottomNav(
+          setCurrentTabIndex: _setCurrentTab,
+          currentIndex: _currentTabIndex,
         ),
       ),
     );
+  }
+
+  List<Widget> _buildTabs() {
+    return [
+      CalendarNavigator(),
+      ChatNavigator(),
+      ProfileNavigator(),
+    ];
   }
 }
