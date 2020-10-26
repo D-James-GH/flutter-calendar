@@ -1,32 +1,43 @@
+import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar/services/db.dart';
 import 'package:flutter_calendar/services/models.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_calendar/helpers/navService.dart';
 
-class AddEventScreen extends StatefulWidget {
-  final String dateID;
-  final DateTime dateObject;
-  final addNewEventToState;
-
-  AddEventScreen({this.dateID, this.addNewEventToState, this.dateObject});
+class EditEventScreen extends StatefulWidget {
+  final EventModel event;
+  final editEventInState;
+  final int index;
+  EditEventScreen({this.event, this.editEventInState, this.index});
 
   @override
-  _AddEventScreenState createState() => _AddEventScreenState();
+  _EditEventScreenState createState() => _EditEventScreenState();
 }
 
-class _AddEventScreenState extends State<AddEventScreen> {
+class _EditEventScreenState extends State<EditEventScreen> {
   final formKey = GlobalKey<FormState>();
 
-  TimeOfDay _time = new TimeOfDay.now();
+  TimeOfDay _time;
   String _title;
   String _notes;
+  @override
+  void initState() {
+    super.initState();
+    EventModel _event = widget.event;
+    _time = TimeOfDay.fromDateTime(_event.timestamp);
+    _title = _event.title;
+    _notes = _event.notes;
+  }
 
   Future selectTime(BuildContext context) async {
+    TimeOfDay initTime = TimeOfDay.fromDateTime(widget.event.timestamp);
     final TimeOfDay selectedTimeRTL = await showTimePicker(
       context: context,
-      initialTime: _time,
+      initialTime: initTime,
       builder: (BuildContext context, Widget child) {
         return Directionality(
           textDirection: TextDirection.rtl,
@@ -43,28 +54,59 @@ class _AddEventScreenState extends State<AddEventScreen> {
   }
 
   void onSubmit(BuildContext context) {
-    String eventID = Uuid().v4();
     User user = Provider.of<User>(context, listen: false);
     EventModel newEvent = EventModel(
       title: _title,
       notes: _notes,
       // time: _stringTime,
-      timestamp: new DateTime(widget.dateObject.year, widget.dateObject.month,
-          widget.dateObject.day, _time.hour, _time.minute),
-      dateID: widget.dateID,
-      eventID: eventID,
+      dateID: widget.event.dateID,
+      timestamp: new DateTime(
+          widget.event.timestamp.year,
+          widget.event.timestamp.month,
+          widget.event.timestamp.day,
+          _time.hour,
+          _time.minute),
       members: [user.uid],
+      eventID: widget.event.eventID,
     );
-    UserData().createEvent(newEvent, eventID);
-    widget.addNewEventToState(newEvent);
-    Navigator.of(context).pop();
+    UserData().createEvent(newEvent, widget.event.eventID);
+    var _navState = NavService.calendarNavState;
+    widget.editEventInState(newEvent, widget.index);
+    _navState.currentState.pop();
+  }
+
+  void handlePopupMenu(String value) {
+    switch (value) {
+      case 'Delete Event':
+        UserData().deleteEvent(widget.event.eventID);
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // EventModel _event = widget.event;
+    // _time = TimeOfDay.fromDateTime(_event.timestamp);
+    // _title = _event.title;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Add Event'),
+          title: Text('Edit Event'),
+          actions: <Widget>[
+            PopupMenuButton<String>(
+              onSelected: handlePopupMenu,
+              itemBuilder: (BuildContext context) {
+                return {'Delete Event'}.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(
+                      choice,
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  );
+                }).toList();
+              },
+            ),
+          ],
         ),
         body: Form(
           key: formKey,
@@ -73,6 +115,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  initialValue: _title,
                   onChanged: (txt) {
                     setState(() {
                       _title = txt;
@@ -108,6 +151,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   height: 30,
                 ),
                 TextFormField(
+                  initialValue: _notes,
                   onChanged: (txt) {
                     setState(() {
                       _notes = txt;

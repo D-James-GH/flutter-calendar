@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/Auth.dart';
-import '../shared/BottomNav.dart';
 
 class Profile extends StatelessWidget {
   final AuthService auth = AuthService();
@@ -16,15 +15,22 @@ class Profile extends StatelessWidget {
         appBar: AppBar(
           title: Text('Profile'),
         ),
-        body: Center(
-          child: FlatButton(
-            child: Text('Logout'),
-            onPressed: () async {
-              await auth.signOut();
-              Navigator.of(context, rootNavigator: true)
-                  .pushNamedAndRemoveUntil('/', (route) => false);
-            },
-          ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(user.displayName),
+            Text(user.email),
+            Center(
+              child: FlatButton(
+                child: Text('Logout'),
+                onPressed: () async {
+                  await auth.signOut();
+                  Navigator.of(context, rootNavigator: true)
+                      .pushNamedAndRemoveUntil('/', (route) => false);
+                },
+              ),
+            ),
+          ],
         ),
       );
     } else {

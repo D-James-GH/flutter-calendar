@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChatMessage extends StatelessWidget {
-  final String _name = 'Your Name';
+  // final String _name = 'Your Name';
   final String text;
   final AnimationController animationController;
   final bool isSentByUser;
@@ -13,6 +15,8 @@ class ChatMessage extends StatelessWidget {
       this.isFirstMessageFromUser});
 
   Widget build(BuildContext context) {
+    final User user = Provider.of<User>(context);
+
     return Container(
       margin: EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -20,20 +24,13 @@ class ChatMessage extends StatelessWidget {
         mainAxisAlignment:
             isSentByUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          // Container(
-          //   margin: const EdgeInsets.only(right: 16.0),
-          //   child: CircleAvatar(
-          //     child: Text(_name[0]),
-          //   ),
-          // ),
-
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               isFirstMessageFromUser
                   ? Container(
                       margin: EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(_name,
+                      child: Text(user.displayName,
                           style: TextStyle(fontSize: 12, height: 0.9)),
                     )
                   : Container(
@@ -55,14 +52,18 @@ class ChatMessage extends StatelessWidget {
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.cyan,
-                        Colors.blue,
-                      ]),
+                      colors: isSentByUser
+                          ? [
+                              Colors.cyan,
+                              Colors.blue,
+                            ]
+                          : [Colors.blueGrey[100], Colors.blueGrey[100]]),
                 ),
                 child: Text(
                   text,
-                  style: TextStyle(fontSize: 17, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 17,
+                      color: isSentByUser ? Colors.white : Colors.black),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -73,36 +74,3 @@ class ChatMessage extends StatelessWidget {
     );
   }
 }
-// Widget build(BuildContext context) {
-//     return SizeTransition(
-//       sizeFactor:
-//           CurvedAnimation(parent: animationController, curve: Curves.easeOut),
-//       axisAlignment: 0,
-//       child: Container(
-//         child: Row(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Container(
-//               margin: const EdgeInsets.only(right: 16.0),
-//               child: CircleAvatar(
-//                 child: Text(_name[0]),
-//               ),
-//             ),
-//             Expanded(
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Text(_name, style: TextStyle(fontSize: 12, height: 0.9)),
-//                   Container(
-//                     margin: EdgeInsets.only(top: 5.0),
-//                     child: Text(text, style: TextStyle(fontSize: 17)),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

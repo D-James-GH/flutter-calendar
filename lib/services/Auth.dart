@@ -16,7 +16,7 @@ class AuthService {
 
   Future<User> googleSignIn() async {
     try {
-      final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
@@ -29,32 +29,76 @@ class AuthService {
       User user = result.user;
       updateUserData(user);
       return user;
-
-      // GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
-      // GoogleSignInAuthentication googleAuth =
-      //     await googleSignInAccount.authentication;
-      // final AuthCredential credential = GoogleAuthProvider.credential(
-      //   accessToken: googleAuth.accessToken,
-      //   idToken: googleAuth.accessToken,
-      // );
-
-      // UserCredential result = await _auth.signInWithCredential(credential);
-      // User user = result.user;
-      // updateUserData(user);
-      // return user;
     } catch (error) {
       print(error);
       return null;
     }
   }
 
-  Future<User> anonLogin() async {
-    UserCredential result = await _auth.signInAnonymously();
-    User user = result.user;
+  Future<User> userRegister(email, password, displayName) async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-    updateUserData(user);
-    return user;
+      User user = userCredential.user;
+
+      await user.updateProfile(displayName: displayName);
+      await user.reload();
+
+      if (_auth.currentUser != null) {
+        User firebaseUser = _auth.currentUser;
+        updateUserData(firebaseUser);
+      }
+      return user;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('the password provided is too weak.');
+        return null;
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email');
+        return null;
+      }
+      return null;
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
+
+  Future<User> userSignIn(email, password) async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      User user = userCredential.user;
+      return user;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+        return null;
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+        return null;
+      }
+      return null;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  // Future<User> anonLogin() async {
+  //   UserCredential result = await _auth.signInAnonymously();
+  //   User user = result.user;
+  //
+  //   updateUserData(user);
+  //   return user;
+  // }
 
   Future updateUserData(User user) {
     DocumentReference usersRef = _db.collection('users').doc(user.uid);
@@ -66,6 +110,7 @@ class AuthService {
   }
 
   Future<void> signOut() {
+    _googleSignIn.signOut();
     return _auth.signOut();
   }
 }

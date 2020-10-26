@@ -13,7 +13,9 @@ class ScreenArguments {
   final String month;
   final String dateID;
   final List events;
-  ScreenArguments({this.day, this.month, this.dateID, this.events});
+  final DateTime dateObject;
+  ScreenArguments(
+      {this.day, this.month, this.dateID, this.events, this.dateObject});
 }
 
 class WeekCell extends StatelessWidget {
@@ -30,11 +32,11 @@ class WeekCell extends StatelessWidget {
 
   void selectDay({context, month, date, events}) {
     var _navState = NavService.calendarNavState;
-    print(events);
     _navState.currentState.pushNamed(
       '/dayView',
       arguments: ScreenArguments(
         dateID: dateID,
+        dateObject: dateObject,
         day: date,
         month: month,
         events: events,
@@ -52,6 +54,7 @@ class WeekCell extends StatelessWidget {
         stream: userData.eventStream(dateID),
         builder: (context, snapshot) {
           var events = snapshot.data;
+
           var _eventList = snapshot.hasData
               ? events.map((e) => eventTitle(e.title)).toList()
               : [Text('')];

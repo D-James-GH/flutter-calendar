@@ -116,15 +116,8 @@ class _ChatState extends State<Chat> with TickerProviderStateMixin {
 
   void _handleSubmitted(String text) {
     _textController.clear();
-    // ChatMessage message = ChatMessage(
-    //   text: text,
-    //   animationController: AnimationController(
-    //     duration: const Duration(milliseconds: 700),
-    //     vsync: this,
-    //   ),
-    // )
     MessageModel message = MessageModel(
-      text: text,
+      text: text.trim(),
       sentBy: user.uid,
       sentTime: DateTime.now(),
       seen: false,
@@ -135,13 +128,13 @@ class _ChatState extends State<Chat> with TickerProviderStateMixin {
       // _messages.insert(0, message);
     });
     _focusNode.requestFocus();
+
     // message.animationController.forward();
   }
 
-  // @override
-  // void dispose() {
-  //   for (ChatMessage message in _messages)
-  //     message.animationController.dispose();
-  //   super.dispose();
-  // }
+  void dispose() {
+    _focusNode.dispose();
+    _textController.dispose();
+    super.dispose();
+  }
 }

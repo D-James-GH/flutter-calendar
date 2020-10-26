@@ -1,7 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar/helpers/navService.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../services/models.dart';
 import '../../services/db.dart';
+import 'CreateChatScreen.dart';
 
 import 'ChatScreen.dart';
 
@@ -12,12 +16,28 @@ class AllChatScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Chats'),
+        actions: [
+          IconButton(
+              icon: Icon(
+                FontAwesomeIcons.edit,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                    settings: RouteSettings(name: '/createChat'),
+                    builder: (_) => CreateChatScreen(),
+                  ),
+                );
+              }),
+        ],
       ),
       body: StreamBuilder<List<ChatModel>>(
           stream: userData.chatModelStream(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<ChatModel> chats = snapshot.data;
+              print(chats.length);
               return ListView.builder(
                   itemCount: chats.length,
                   itemBuilder: (context, i) {
@@ -43,7 +63,7 @@ class AllChatScreen extends StatelessWidget {
     return Text(output);
   }
 
-  _gotoChat(context, chatID, members) {
+  void _gotoChat(context, chatID, members) {
     // NavService.chatNavState.currentState.pushNamed('/chat');
     Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(

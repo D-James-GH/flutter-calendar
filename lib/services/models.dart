@@ -4,37 +4,43 @@ class EventModel {
   final String title;
   final String notes;
   final String dateID;
-  final String time;
+  final DateTime timestamp;
+  // final String time;
   final List members;
   final String eventID;
 
   EventModel({
     this.notes,
     this.dateID,
-    this.time,
+    // this.time,
     this.title,
     this.eventID,
     this.members,
+    this.timestamp,
   });
 
   factory EventModel.fromMap(Map<String, dynamic> data) {
+    Timestamp _timestampFromDB = data['timeStamp'] ?? Timestamp.now();
+    DateTime _timestamp = _timestampFromDB.toDate();
     return EventModel(
       title: data['title'],
       notes: data['notes'] ?? '',
-      dateID: data['date'] ?? '',
+      dateID: data['dateID'] ?? '',
       members: data['members'] ?? [''],
-      time: data['time'] ?? '',
+      // time: data['time'] ?? '',
+      timestamp: _timestamp,
       eventID: data['eventID'] ?? '',
     );
   }
   Map<String, dynamic> toMap() {
     return {
       'title': title,
-      'date': dateID,
-      'time': time,
+      'dateID': dateID,
+      // 'time': time,
       'eventID': eventID,
       'notes': notes,
-      'members': members
+      'members': members,
+      'timeStamp': timestamp,
     };
   }
 }
@@ -70,7 +76,7 @@ class MessageModel {
 
 class ChatModel {
   final String latestMessage;
-  final Map members;
+  final Map<String, dynamic> members;
   final String chatID;
 
   ChatModel({this.latestMessage, this.members, this.chatID});
@@ -80,7 +86,26 @@ class ChatModel {
     return ChatModel(
       chatID: snap.id,
       latestMessage: data['latestMessage'] ?? '',
-      members: data['members'] ?? {'': ''},
+      members: data['members'] ??
+          {
+            '': {'': ''}
+          },
+    );
+  }
+}
+
+class UserModel {
+  final String uid;
+  final String email;
+  final String displayName;
+
+  UserModel({this.uid, this.email, this.displayName});
+
+  factory UserModel.fromMap(Map<String, dynamic> data) {
+    return UserModel(
+      uid: data['uid'] ?? '',
+      email: data['email'] ?? '',
+      displayName: data['displayName'],
     );
   }
 }

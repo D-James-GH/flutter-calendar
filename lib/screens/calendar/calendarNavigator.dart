@@ -18,9 +18,9 @@ class CalendarNavigator extends StatelessWidget {
                   break;
                 case '/dayView':
                   ScreenArguments args = settings.arguments;
-                  print(args.day);
                   return DayView(
                     dateID: args.dateID,
+                    dateObject: args.dateObject,
                     day: args.day,
                     month: args.month,
                     events: args.events,
