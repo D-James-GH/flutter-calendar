@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_calendar/bloc/calendar_bloc.dart';
 import 'package:flutter_calendar/helpers/navService.dart';
 import 'package:flutter_calendar/screens/profile/profileNavigator.dart';
+import 'package:flutter_calendar/services/db.dart';
+import 'package:flutter_calendar/state/eventState.dart';
 import 'package:provider/provider.dart';
 import '../screens/screens.dart';
 import 'shared/BottomNav.dart';
@@ -43,9 +47,12 @@ class HomeState extends State<Home> {
         return isFirstRouteInCurrentTab;
       },
       child: Scaffold(
-        body: IndexedStack(
-          index: _currentTabIndex,
-          children: _buildTabs(),
+        body: BlocProvider(
+          create: (context) => CalendarBloc(),
+          child: IndexedStack(
+            index: _currentTabIndex,
+            children: _buildTabs(),
+          ),
         ),
         bottomNavigationBar: BottomNav(
           setCurrentTabIndex: _setCurrentTab,

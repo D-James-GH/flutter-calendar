@@ -23,7 +23,6 @@ class CalendarNavigator extends StatelessWidget {
                     dateObject: args.dateObject,
                     day: args.day,
                     month: args.month,
-                    events: args.events,
                   );
                   break;
                 default:

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 
-class EventModel {
+class EventModel extends Equatable {
   final String title;
   final String notes;
   final String dateID;
@@ -19,6 +20,13 @@ class EventModel {
     this.timestamp,
   });
 
+  @override
+  List<Object> get props => [notes, dateID, title, eventID, members, timestamp];
+
+  @override
+  String toString() =>
+      'EventModel { notes: $notes, dateID: $dateID, title: $title, eventID: $eventID, members: $members, timestamp: $timestamp }';
+
   factory EventModel.fromMap(Map<String, dynamic> data) {
     Timestamp _timestampFromDB = data['timeStamp'] ?? Timestamp.now();
     DateTime _timestamp = _timestampFromDB.toDate();
@@ -32,6 +40,7 @@ class EventModel {
       eventID: data['eventID'] ?? '',
     );
   }
+
   Map<String, dynamic> toMap() {
     return {
       'title': title,

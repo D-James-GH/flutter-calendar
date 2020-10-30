@@ -1,4 +1,4 @@
-export 'AddEventScreen.dart';
-export 'DayViewScreen.dart';
-export 'MonthScreen.dart';
-export 'WeekCell.dart';
+export './eventScreen/AddEventScreen.dart';
+export './dayViewScreen/DayViewScreen.dart';
+export './monthScreen/MonthScreen.dart';
+export './monthScreen/WeekCell.dart';

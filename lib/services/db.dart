@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 import 'package:rxdart/rxdart.dart';
 import 'dart:async';
 import 'models.dart';
@@ -8,45 +9,54 @@ class UserData {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> getDocs(String date) {
-    User user = _auth.currentUser;
-
-    var docs = _db
-        .collection('events')
-        .where('members', arrayContains: user.uid)
-        .where('date', isEqualTo: date)
-        .get()
-        .then((value) =>
-            value.docs.map((e) => EventModel.fromMap(e.data())).toList());
-    return docs;
-  }
-
   Stream<List<EventModel>> eventStream(dateID) {
     return _auth.authStateChanges().switchMap((user) {
       if (user != null) {
-        return _db
+        var result = _db
             .collection('events')
             .where('members', arrayContains: user.uid)
             .where('dateID', isEqualTo: dateID)
             .snapshots()
             .map((snap) =>
                 snap.docs.map((e) => EventModel.fromMap(e.data())).toList());
+        return result;
       } else {
         return Stream<List<EventModel>>.value(null);
       }
     });
   }
 
-  void createEvent(EventModel data, String docRefIn) {
+  Future<List<EventModel>> getEvents(String dateID) async {
+    User user = _auth.currentUser;
+    if (user != null) {
+      var result = await _db
+          .collection('events')
+          .where('members', arrayContains: user.uid)
+          .where('dateID', isEqualTo: dateID)
+          .get();
+      List<EventModel> events = result.docs.length != 0
+          ? result.docs.map((event) {
+              return EventModel.fromMap(event.data());
+            }).toList()
+          : [];
+
+      return events;
+    } else {
+      return Future<List<EventModel>>.value(null);
+    }
+  }
+
+  Future<void> createEvent({EventModel data, String docRefIn}) {
     User user = _auth.currentUser;
     CollectionReference ref = _db.collection('events');
     String docRef = docRefIn ?? data.eventID;
     if (user != null) {
-      ref
+      return ref
           .doc(docRef)
           .set(data.toMap(), SetOptions(merge: true))
           .then((value) => print('done'));
     }
+    return Future.value(null);
   }
 
   Future<void> deleteEvent(String docID) {
@@ -84,7 +94,6 @@ class UserData {
             .where('members.' + user.uid, isGreaterThan: {})
             .snapshots()
             .map((snap) {
-              print(snap.size);
               return snap.docs.map((e) => ChatModel.fromFirestore(e)).toList();
             });
       } else {

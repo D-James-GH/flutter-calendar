@@ -4,7 +4,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-
+import 'services/service_locator.dart';
 import 'screens/screens.dart';
 import 'services/db.dart';
 import 'services/models.dart';
@@ -13,6 +13,7 @@ import 'services/Auth.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  setupLocator();
   runApp(MyCalendarApp());
 }
 

@@ -1,8 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar/helpers/navService.dart';
+import 'package:flutter_calendar/services/service_locator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import '../../services/models.dart';
 import '../../services/db.dart';
 import 'CreateChatScreen.dart';
@@ -12,7 +12,7 @@ import 'ChatScreen.dart';
 class AllChatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    UserData userData = UserData();
+    UserData userData = locator<UserData>();
     return Scaffold(
       appBar: AppBar(
         title: Text('Chats'),
@@ -37,7 +37,7 @@ class AllChatScreen extends StatelessWidget {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               List<ChatModel> chats = snapshot.data;
-              print(chats.length);
+
               return ListView.builder(
                   itemCount: chats.length,
                   itemBuilder: (context, i) {
