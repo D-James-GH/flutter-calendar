@@ -1,11 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_calendar/bloc/calendar_bloc.dart';
 import 'package:flutter_calendar/helpers/navService.dart';
-import 'package:flutter_calendar/services/db.dart';
 import 'package:flutter_calendar/services/models.dart';
-import 'package:flutter_calendar/services/service_locator.dart';
+import 'package:flutter_calendar/appState/calendar_state.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -27,7 +24,9 @@ class EventScreen extends StatefulWidget {
 
 class _EventScreenState extends State<EventScreen> {
   final formKey = GlobalKey<FormState>();
-  CalendarBloc _calendarBloc;
+  // CalendarBloc _calendarBloc;
+  CalendarStateFromProvider calendarState;
+
   TimeOfDay _time;
   String _title;
   String _notes;
@@ -36,16 +35,15 @@ class _EventScreenState extends State<EventScreen> {
   @override
   void initState() {
     super.initState();
-    _calendarBloc = BlocProvider.of<CalendarBloc>(context);
+    // _calendarBloc = BlocProvider.of<CalendarBloc>(context);
     if (widget.edit == true) {
-      var _state = _calendarBloc.state;
+      calendarState =
+          Provider.of<CalendarStateFromProvider>(context, listen: false);
 
-      if (_state is CalendarLoadMonthSuccess) {
-        _event = _state.events[widget.dateID][widget.index];
-        _time = TimeOfDay.fromDateTime(_event.timestamp);
-        _title = _event.title;
-        _notes = _event.notes;
-      }
+      _event = calendarState.events[widget.dateID][widget.index];
+      _time = TimeOfDay.fromDateTime(_event.timestamp);
+      _title = _event.title;
+      _notes = _event.notes;
     } else {
       _time = new TimeOfDay.now();
     }
@@ -160,15 +158,11 @@ class _EventScreenState extends State<EventScreen> {
     switch (value) {
       case 'Delete Event':
         // UserData().deleteEvent(widget.event.eventID);
-        // TODO: handle delete event from state
         if (widget.edit == true) {
           print('trying to delete');
-
-          _calendarBloc.add(
-            CalendarDeletedEvent(
-              eventID: _event.eventID,
-              dateID: widget.dateID,
-            ),
+          calendarState.deleteEvent(
+            eventID: _event.eventID,
+            dateID: widget.dateID,
           );
           var _navState = NavService.calendarNavState;
           _navState.currentState.pop();
@@ -178,7 +172,8 @@ class _EventScreenState extends State<EventScreen> {
   }
 
   void onSubmit(BuildContext context) {
-    //TODO: handle submit to db using bloc
+    CalendarStateFromProvider _calendarState =
+        Provider.of<CalendarStateFromProvider>(context, listen: false);
     User user = Provider.of<User>(context, listen: false);
     String _eventID = widget.edit == true ? _event.eventID : Uuid().v4();
     DateTime _timeStamp = widget.edit == true
@@ -194,16 +189,16 @@ class _EventScreenState extends State<EventScreen> {
     EventModel newEvent = EventModel(
       title: _title,
       notes: _notes,
-      // time: _stringTime,
       dateID: widget.dateID,
       timestamp: _timeStamp,
       members: [user.uid],
       eventID: _eventID,
     );
-    _calendarBloc.add(CalendarAddEvent(
-      calendarEvent: newEvent,
+
+    _calendarState.editEvent(
+      event: newEvent,
       dateID: widget.dateID,
-    ));
+    );
     var _navState = NavService.calendarNavState;
 
     _navState.currentState.pop();

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_calendar/bloc/calendar_bloc.dart';
+import 'package:flutter_calendar/appState/calendar_state.dart';
 import 'package:flutter_calendar/helpers/navService.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ScreenArguments {
   final String day;
@@ -14,63 +14,44 @@ class ScreenArguments {
 
 class WeekCell extends StatefulWidget {
   final bool isCurrentMonth;
-  final dateObject;
+  final DateTime dateObject;
   final int testDate;
-  String dateID;
+  final String dateID;
 
-  WeekCell({this.dateObject, this.isCurrentMonth, this.testDate}) {
-    dateID = DateFormat.yMMMd().format(dateObject).toString();
-    dateID = dateID.replaceAll(' ', '');
-    dateID = dateID.replaceAll(',', '');
-  }
+  WeekCell({this.dateObject, this.isCurrentMonth, this.testDate, this.dateID});
 
   @override
   _WeekCellState createState() => _WeekCellState();
 }
 
 class _WeekCellState extends State<WeekCell> {
-  CalendarBloc _calendarBloc;
+  CalendarStateFromProvider calendarState;
   var month;
   var date;
-
-  void selectDay({context, month, date}) {
-    var _navState = NavService.calendarNavState;
-    _navState.currentState.pushNamed(
-      '/dayView',
-      arguments: ScreenArguments(
-        dateID: widget.dateID,
-        dateObject: widget.dateObject,
-        day: date,
-        month: month,
-      ),
-    );
-  }
 
   @override
   void initState() {
     super.initState();
-    _calendarBloc = BlocProvider.of<CalendarBloc>(context)
-      ..add(CalendarFetched(dateID: widget.dateID));
+    calendarState =
+        Provider.of<CalendarStateFromProvider>(context, listen: false);
+    calendarState.fetchEventFromDB(dateID: widget.dateID);
+
     month = DateFormat.MMMM().format(widget.dateObject);
     date = DateFormat.d().format(widget.dateObject);
   }
 
   @override
   Widget build(BuildContext context) {
-    // UserData userData = UserData();
-    // userData.eventStream(dateID);
-
     return InkWell(
       child: (Container(
-        child: BlocBuilder<CalendarBloc, CalendarState>(
-          builder: (context, state) {
+        child: Consumer<CalendarStateFromProvider>(
+          builder: (context, calendar, child) {
             List _eventTitles = [Text('')];
-            if (state is CalendarLoadMonthSuccess) {
-              if (state.events[widget.dateID] != null) {
-                _eventTitles = state.events[widget.dateID]
-                    .map((e) => eventTitle(e.title))
-                    .toList();
-              }
+
+            if (calendar.events[widget.dateID] != null) {
+              _eventTitles = calendar.events[widget.dateID]
+                  .map((e) => eventTitle(e.title))
+                  .toList();
             }
 
             return Column(
@@ -108,6 +89,19 @@ class _WeekCellState extends State<WeekCell> {
         style: TextStyle(fontSize: 10, color: Color(0xffffffff)),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  void selectDay({context, month, date}) {
+    var _navState = NavService.calendarNavState;
+    _navState.currentState.pushNamed(
+      '/dayView',
+      arguments: ScreenArguments(
+        dateID: widget.dateID,
+        dateObject: widget.dateObject,
+        day: date,
+        month: month,
       ),
     );
   }

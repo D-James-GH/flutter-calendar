@@ -105,33 +105,47 @@ class _MonthScreenState extends State<MonthScreen> {
     List<Expanded> _cal = [];
     if (startOfMonthDay > 1) {
       for (int d = (2 - startOfMonthDay); d <= 0; d++) {
+        DateTime _dateObject = DateTime(dateObject.year, dateObject.month, d);
         _cal.add(Expanded(
           flex: 1,
           child: WeekCell(
-            dateObject: DateTime(dateObject.year, dateObject.month, d),
+            dateObject: _dateObject,
             isCurrentMonth: false,
+            dateID: _calcDateID(_dateObject),
           ),
         ));
       }
     }
     for (int d = 1; d <= monthLength; d++) {
+      DateTime _dateObject = DateTime(dateObject.year, dateObject.month, d);
+
       _cal.add(Expanded(
         flex: 1,
         child: WeekCell(
-          dateObject: DateTime(dateObject.year, dateObject.month, d),
+          dateObject: _dateObject,
           isCurrentMonth: true,
+          dateID: _calcDateID(_dateObject),
         ),
       ));
     }
     for (int d = 1; _cal.length < 42; d++) {
+      DateTime _dateObject = DateTime(dateObject.year, dateObject.month + 1, d);
       _cal.add(Expanded(
         flex: 1,
         child: WeekCell(
-          dateObject: DateTime(dateObject.year, dateObject.month + 1, d),
+          dateObject: _dateObject,
           isCurrentMonth: false,
+          dateID: _calcDateID(_dateObject),
         ),
       ));
     }
     return _cal;
+  }
+
+  String _calcDateID(DateTime dateOBJ) {
+    String dateID = DateFormat.yMMMd().format(dateOBJ).toString();
+    dateID = dateID.replaceAll(' ', '');
+    dateID = dateID.replaceAll(',', '');
+    return dateID;
   }
 }
