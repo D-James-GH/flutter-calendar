@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_calendar/appState/calendar_state.dart';
 import 'package:flutter_calendar/helpers/navService.dart';
 import 'package:flutter_calendar/screens/profile/profileNavigator.dart';
-import 'package:flutter_calendar/state/eventState.dart';
 import 'package:provider/provider.dart';
 import '../screens/screens.dart';
 import 'shared/BottomNav.dart';

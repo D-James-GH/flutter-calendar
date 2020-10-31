@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:equatable/equatable.dart';
 
-class EventModel extends Equatable {
+class EventModel {
   final String title;
   final String notes;
   final String dateID;
   final DateTime timestamp;
-  // final String time;
   final List members;
   final String eventID;
 
@@ -19,9 +17,6 @@ class EventModel extends Equatable {
     this.members,
     this.timestamp,
   });
-
-  @override
-  List<Object> get props => [notes, dateID, title, eventID, members, timestamp];
 
   @override
   String toString() =>
