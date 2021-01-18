@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'WeekCell.dart';
-// import 'Week.dart';
+// custom lib
+import 'week_cell.dart';
 
 class MonthScreen extends StatefulWidget {
   final daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -65,7 +65,8 @@ class _MonthScreenState extends State<MonthScreen> {
 
   void _changeMonthBack() {
     // set state of month
-    var newDateObject = new DateTime(dateObject.year, dateObject.month - 1, 1);
+    var newDateObject =
+        new DateTime(dateObject.year, dateObject.month - 1, dateObject.day);
     setState(() {
       dateObject = newDateObject;
     });
@@ -73,7 +74,8 @@ class _MonthScreenState extends State<MonthScreen> {
 
   void _changeMonthForward() {
     // set state of month
-    var newDateObject = new DateTime(dateObject.year, dateObject.month + 1, 1);
+    var newDateObject =
+        new DateTime(dateObject.year, dateObject.month + 1, dateObject.day);
     setState(() {
       dateObject = newDateObject;
     });
@@ -106,6 +108,7 @@ class _MonthScreenState extends State<MonthScreen> {
     if (startOfMonthDay > 1) {
       for (int d = (2 - startOfMonthDay); d <= 0; d++) {
         DateTime _dateObject = DateTime(dateObject.year, dateObject.month, d);
+
         _cal.add(Expanded(
           flex: 1,
           child: WeekCell(
@@ -117,7 +120,7 @@ class _MonthScreenState extends State<MonthScreen> {
       }
     }
     for (int d = 1; d <= monthLength; d++) {
-      DateTime _dateObject = DateTime(dateObject.year, dateObject.month, d);
+      DateTime _dateObject = new DateTime(dateObject.year, dateObject.month, d);
 
       _cal.add(Expanded(
         flex: 1,

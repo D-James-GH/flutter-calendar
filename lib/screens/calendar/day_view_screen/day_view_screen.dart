@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/appState/calendar_state.dart';
-import 'package:flutter_calendar/helpers/navService.dart';
-import 'package:flutter_calendar/screens/calendar/eventScreen/EventScreen.dart';
 import 'package:provider/provider.dart';
+
+// custom lib
+import '../event_screen/event_screen.dart';
+import '../../../services/helpers/nav_service.dart';
+import '../../../app_state/calendar_state.dart';
 
 class DayView extends StatelessWidget {
   final String day;
@@ -23,7 +25,7 @@ class DayView extends StatelessWidget {
       appBar: AppBar(
         title: Text('$day $month'),
       ),
-      body: Consumer<CalendarStateFromProvider>(
+      body: Consumer<CalendarState>(
         builder: (context, calendar, child) {
           var events = [];
           if (calendar.events[dateID] != null) {
@@ -57,7 +59,7 @@ class DayView extends StatelessWidget {
                             Text(events[index].title),
                             Text(TimeOfDay.fromDateTime(events[index].timestamp)
                                 .format(context)),
-                            Text(events[index].notes),
+                            Text(events[index].notes ?? ' '),
                           ],
                         ),
                       ),

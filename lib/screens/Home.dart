@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/appState/calendar_state.dart';
-import 'package:flutter_calendar/helpers/navService.dart';
-import 'package:flutter_calendar/screens/profile/profileNavigator.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+
+// custom lib
 import '../screens/screens.dart';
-import 'shared/BottomNav.dart';
+import '../app_state/calendar_state.dart';
+import '../app_state/user_state.dart';
+import '../services/services.dart';
 
 // GlobalKey<NavigatorState> _calendarNavKey = GlobalKey<NavigatorState>();
 class Home extends StatefulWidget {
@@ -20,12 +22,6 @@ class HomeState extends State<Home> {
     1: NavService.chatNavState,
     2: NavService.profileNavState,
   };
-
-  void _setCurrentTab(int index) {
-    setState(() {
-      _currentTabIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,26 +40,59 @@ class HomeState extends State<Home> {
         return isFirstRouteInCurrentTab;
       },
       child: Scaffold(
-        body: ChangeNotifierProvider(
-          create: (context) => CalendarStateFromProvider(),
-          child: IndexedStack(
-            index: _currentTabIndex,
-            children: _buildTabs(),
-          ),
+        body: IndexedStack(
+          index: _currentTabIndex,
+          children: _buildTabs(),
         ),
-        bottomNavigationBar: BottomNav(
-          setCurrentTabIndex: _setCurrentTab,
+        bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentTabIndex,
+          type: BottomNavigationBarType.fixed,
+          items: _buildBottomNav(),
+          onTap: (index) => _setCurrentTab(index),
         ),
       ),
     );
+  }
+
+  List<BottomNavigationBarItem> _buildBottomNav() {
+    return [
+      BottomNavigationBarItem(
+        icon: Icon(
+          FontAwesomeIcons.calendarAlt,
+          size: 20,
+        ),
+        label: 'Calendar',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          FontAwesomeIcons.comments,
+          size: 20,
+        ),
+        label: 'Chat',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          FontAwesomeIcons.user,
+          size: 20,
+        ),
+        label: 'Profile',
+      ),
+    ];
   }
 
   List<Widget> _buildTabs() {
     return [
       CalendarNavigator(),
       ChatNavigator(),
-      ProfileNavigator(),
+      ContactNavigator(),
     ];
+  }
+
+  void _setCurrentTab(int index) {
+    if (_currentTabIndex != index) {
+      setState(() {
+        _currentTabIndex = index;
+      });
+    }
   }
 }

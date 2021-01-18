@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/appState/calendar_state.dart';
-import 'package:flutter_calendar/helpers/navService.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
+//custom lib
+import '../../../services/services.dart';
+import '../../../app_state/calendar_state.dart';
 
 class ScreenArguments {
   final String day;
@@ -15,36 +18,43 @@ class ScreenArguments {
 class WeekCell extends StatefulWidget {
   final bool isCurrentMonth;
   final DateTime dateObject;
-  final int testDate;
   final String dateID;
+  final String month;
+  final String date;
 
-  WeekCell({this.dateObject, this.isCurrentMonth, this.testDate, this.dateID});
+  WeekCell({this.dateObject, this.isCurrentMonth, this.dateID})
+      : month = DateFormat.MMMM().format(dateObject),
+        date = DateFormat.d().format(dateObject);
 
   @override
   _WeekCellState createState() => _WeekCellState();
 }
 
 class _WeekCellState extends State<WeekCell> {
-  CalendarStateFromProvider calendarState;
-  var month;
-  var date;
+  CalendarState calendarState;
 
   @override
   void initState() {
     super.initState();
-    calendarState =
-        Provider.of<CalendarStateFromProvider>(context, listen: false);
+    calendarState = Provider.of<CalendarState>(context, listen: false);
     calendarState.fetchEventFromDB(dateID: widget.dateID);
+  }
 
-    month = DateFormat.MMMM().format(widget.dateObject);
-    date = DateFormat.d().format(widget.dateObject);
+  @override
+  void didUpdateWidget(WeekCell oldWidget) {
+    //TODO: dont fetch if already in state
+
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.dateObject.month != widget.dateObject.month) {
+      calendarState.fetchEventFromDB(dateID: widget.dateID);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       child: (Container(
-        child: Consumer<CalendarStateFromProvider>(
+        child: Consumer<CalendarState>(
           builder: (context, calendar, child) {
             List _eventTitles = [Text('')];
 
@@ -52,12 +62,20 @@ class _WeekCellState extends State<WeekCell> {
               _eventTitles = calendar.events[widget.dateID]
                   .map((e) => eventTitle(e.title))
                   .toList();
+              if (_eventTitles.length > 4) {
+                _eventTitles = _eventTitles.getRange(0, 3).toList();
+                _eventTitles.add(Icon(
+                  FontAwesomeIcons.ellipsisH,
+                  size: 10,
+                  color: Colors.grey,
+                ));
+              }
             }
 
             return Column(
               children: <Widget>[
                 Text(
-                  date,
+                  widget.date,
                   style: TextStyle(),
                 ),
                 ..._eventTitles,
@@ -71,14 +89,15 @@ class _WeekCellState extends State<WeekCell> {
       )),
       onTap: () => selectDay(
         context: context,
-        month: month,
-        date: date,
+        month: widget.month,
+        date: widget.date,
       ),
     );
   }
 
   Widget eventTitle(String title) {
     return Container(
+      margin: EdgeInsets.symmetric(horizontal: 0, vertical: 1),
       padding: EdgeInsets.all(2),
       decoration: BoxDecoration(
         color: const Color(0xff389081),

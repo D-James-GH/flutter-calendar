@@ -1,10 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/helpers/navService.dart';
-import 'package:flutter_calendar/services/models.dart';
-import 'package:flutter_calendar/appState/calendar_state.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+
+// custom lib
+import '../../../services/services.dart';
+import '../../../models/models.dart';
+import '../../../app_state/calendar_state.dart';
 
 class EventScreen extends StatefulWidget {
   final DateTime dateObject;
@@ -25,7 +27,7 @@ class EventScreen extends StatefulWidget {
 class _EventScreenState extends State<EventScreen> {
   final formKey = GlobalKey<FormState>();
   // CalendarBloc _calendarBloc;
-  CalendarStateFromProvider calendarState;
+  CalendarState calendarState;
 
   TimeOfDay _time;
   String _title;
@@ -37,8 +39,7 @@ class _EventScreenState extends State<EventScreen> {
     super.initState();
     // _calendarBloc = BlocProvider.of<CalendarBloc>(context);
     if (widget.edit == true) {
-      calendarState =
-          Provider.of<CalendarStateFromProvider>(context, listen: false);
+      calendarState = Provider.of<CalendarState>(context, listen: false);
 
       _event = calendarState.events[widget.dateID][widget.index];
       _time = TimeOfDay.fromDateTime(_event.timestamp);
@@ -46,24 +47,6 @@ class _EventScreenState extends State<EventScreen> {
       _notes = _event.notes;
     } else {
       _time = new TimeOfDay.now();
-    }
-  }
-
-  Future selectTime(BuildContext context) async {
-    final TimeOfDay selectedTimeRTL = await showTimePicker(
-      context: context,
-      initialTime: _time,
-      builder: (BuildContext context, Widget child) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: child,
-        );
-      },
-    );
-    if (selectedTimeRTL != null) {
-      setState(() {
-        _time = selectedTimeRTL;
-      });
     }
   }
 
@@ -154,6 +137,24 @@ class _EventScreenState extends State<EventScreen> {
     );
   }
 
+  Future selectTime(BuildContext context) async {
+    final TimeOfDay selectedTimeRTL = await showTimePicker(
+      context: context,
+      initialTime: _time,
+      builder: (BuildContext context, Widget child) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: child,
+        );
+      },
+    );
+    if (selectedTimeRTL != null) {
+      setState(() {
+        _time = selectedTimeRTL;
+      });
+    }
+  }
+
   void handlePopupMenu(String value) {
     switch (value) {
       case 'Delete Event':
@@ -172,8 +173,8 @@ class _EventScreenState extends State<EventScreen> {
   }
 
   void onSubmit(BuildContext context) {
-    CalendarStateFromProvider _calendarState =
-        Provider.of<CalendarStateFromProvider>(context, listen: false);
+    CalendarState _calendarState =
+        Provider.of<CalendarState>(context, listen: false);
     User user = Provider.of<User>(context, listen: false);
     String _eventID = widget.edit == true ? _event.eventID : Uuid().v4();
     DateTime _timeStamp = widget.edit == true

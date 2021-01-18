@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/services/db.dart';
-import 'package:flutter_calendar/services/service_locator.dart';
+import 'package:provider/provider.dart';
+
+// custom lib
+import '../../services/services.dart';
+import '../../app_state/user_state.dart';
+import '../../models/models.dart';
 
 class CreateChatScreen extends StatefulWidget {
   @override
@@ -12,6 +16,17 @@ class _CreateChatScreenState extends State<CreateChatScreen> {
   MessageData messageData = locator<MessageData>();
   List<String> _memberEmails = [];
   bool _emailNotFound = false;
+
+  UserState _userState;
+  List<UserModel> _contacts;
+
+  @override
+  void initState() {
+    super.initState();
+    _userState = Provider.of<UserState>(context, listen: false);
+    _contacts = _userState.contacts;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,6 +70,7 @@ class _CreateChatScreenState extends State<CreateChatScreen> {
                   ? Text(
                       'Email not found in our database, please check the spelling...')
                   : Text(''),
+              ..._buildAllContacts(),
             ],
           ),
         ),
@@ -62,12 +78,27 @@ class _CreateChatScreenState extends State<CreateChatScreen> {
     );
   }
 
-  void _createChat() async {
+  List<Widget> _buildAllContacts() {
+    return _contacts.map((contact) {
+      return InkWell(
+        child: Text('Contact: ${contact.displayName}'),
+        onTap: () => _createChat([contact]),
+      );
+    }).toList();
+  }
+
+  void _createChat([List<UserModel> contacts]) async {
     // temp until you can add multiple people to chat
-    _memberEmails.add(emailController.text);
+    bool result;
+    if (contacts != null) {
+      result = await messageData.createChat(contacts: contacts);
+    } else {
+      _memberEmails.add(emailController.text);
+      result = await messageData.createChat(userEmails: _memberEmails);
+    }
 
     /* result will come back false if the _memberEmails do not exist in the db */
-    bool result = await messageData.createChat(_memberEmails);
+
     if (result == true) {
       Navigator.of(context, rootNavigator: true).pop();
     } else {

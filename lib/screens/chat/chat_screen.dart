@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/screens/chat/chat_message.dart';
-import 'package:flutter_calendar/services/db.dart';
-import 'package:flutter_calendar/models/models.dart';
-import 'package:flutter_calendar/services/service_locator.dart';
+
+// custom lib
+import 'chat_message.dart';
+import '../../services/services.dart';
+import '../../models/models.dart';
 
 class Chat extends StatefulWidget {
   final String chatID;

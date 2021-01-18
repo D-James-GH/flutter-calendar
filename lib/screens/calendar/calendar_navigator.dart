@@ -1,7 +1,9 @@
-import 'package:flutter_calendar/helpers/navService.dart';
 import 'package:flutter/material.dart';
-import '../SomethingWentWrong.dart';
-import 'allCalendarScreens.dart';
+
+// custom lib
+import '../../services/services.dart';
+import '../something_went_wrong.dart';
+import 'all_calendar_screens.dart';
 
 class CalendarNavigator extends StatelessWidget {
   @override

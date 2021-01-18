@@ -1,16 +1,19 @@
-# flutter_calendar
+# Calendar Chat
+A social calendar application built with flutter.
 
-A new Flutter project.
+### Aims and features
+- Calendar
+  - Invite other contacts to an event
+  - plan trips with other users and stops
+  - tags for events
+  - types of events
+    - should be able to select multiple days/holiday planner
+      - eg. A holiday should be selected in a block which when tapped on will bring up the holiday planner
+- Social messenger
+  - easily message the group of an event
+  - create private messages 
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Feature time line
+  - adding contacts and creating chats with contacts
+  - invite contacts in event creation
+  - basic style for chats page and contacts page

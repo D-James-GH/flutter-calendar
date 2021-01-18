@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/helpers/navService.dart';
-import '../SomethingWentWrong.dart';
-import 'Profile.dart';
 
-class ProfileNavigator extends StatelessWidget {
+// custom lib
+import '../../services/services.dart';
+import '../something_went_wrong.dart';
+import './contact_screen/contacts.dart';
+
+class ContactNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Navigator(
@@ -14,7 +16,7 @@ class ProfileNavigator extends StatelessWidget {
             builder: (BuildContext context) {
               switch (settings.name) {
                 case '/':
-                  return Profile();
+                  return Contacts();
                 default:
                   return SomethingWentWrong();
               }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/helpers/nav_service.dart';
-import 'package:flutter_calendar/screens/chat/all_chats.dart';
 
-import '../SomethingWentWrong.dart';
+// custom lib
+import '../../services/services.dart';
+import 'all_chats.dart';
+
+import '../something_went_wrong.dart';
 
 class ChatNavigator extends StatefulWidget {
   @override
