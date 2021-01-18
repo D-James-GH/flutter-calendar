@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/helpers/navService.dart';
-import 'package:flutter_calendar/screens/chat/AllChats.dart';
-import 'package:provider/provider.dart';
-import '../../services/db.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_calendar/helpers/nav_service.dart';
+import 'package:flutter_calendar/screens/chat/all_chats.dart';
 
 import '../SomethingWentWrong.dart';
-import 'ChatScreen.dart';
 
 class ChatNavigator extends StatefulWidget {
   @override

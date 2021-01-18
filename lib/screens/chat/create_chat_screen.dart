@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar/services/db.dart';
+import 'package:flutter_calendar/services/service_locator.dart';
 
 class CreateChatScreen extends StatefulWidget {
   @override
@@ -8,7 +9,9 @@ class CreateChatScreen extends StatefulWidget {
 
 class _CreateChatScreenState extends State<CreateChatScreen> {
   var emailController = TextEditingController();
+  MessageData messageData = locator<MessageData>();
   List<String> _memberEmails = [];
+  bool _emailNotFound = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +51,10 @@ class _CreateChatScreenState extends State<CreateChatScreen> {
                   ),
                 ],
               ),
+              _emailNotFound
+                  ? Text(
+                      'Email not found in our database, please check the spelling...')
+                  : Text(''),
             ],
           ),
         ),
@@ -55,12 +62,19 @@ class _CreateChatScreenState extends State<CreateChatScreen> {
     );
   }
 
-  void _createChat() {
+  void _createChat() async {
     // temp until you can add multiple people to chat
     _memberEmails.add(emailController.text);
-    UserData userData = UserData();
-    userData.createChat(_memberEmails);
-    Navigator.of(context, rootNavigator: true).pop();
+
+    /* result will come back false if the _memberEmails do not exist in the db */
+    bool result = await messageData.createChat(_memberEmails);
+    if (result == true) {
+      Navigator.of(context, rootNavigator: true).pop();
+    } else {
+      setState(() {
+        _emailNotFound = true;
+      });
+    }
   }
 
   @override

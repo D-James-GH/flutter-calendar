@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/screens/chat/ChatMessage.dart';
+import 'package:flutter_calendar/screens/chat/chat_message.dart';
 import 'package:flutter_calendar/services/db.dart';
-import 'package:flutter_calendar/services/models.dart';
+import 'package:flutter_calendar/models/models.dart';
+import 'package:flutter_calendar/services/service_locator.dart';
 
 class Chat extends StatefulWidget {
   final String chatID;
@@ -13,7 +14,7 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> with TickerProviderStateMixin {
-  UserData userData = UserData();
+  MessageData messageData = locator<MessageData>();
   User user = FirebaseAuth.instance.currentUser;
   final _textController = TextEditingController();
 
@@ -40,7 +41,7 @@ class _ChatState extends State<Chat> with TickerProviderStateMixin {
 
   Widget _listMessages() {
     return StreamBuilder(
-        stream: userData.messageStream(widget.chatID),
+        stream: messageData.messageStream(widget.chatID),
         builder: (context, snapshot) {
           List<ChatMessage> _messages = [];
           if (snapshot.hasData) {
@@ -122,7 +123,7 @@ class _ChatState extends State<Chat> with TickerProviderStateMixin {
       sentTime: DateTime.now(),
       seen: false,
     );
-    userData.sendMessage(message, widget.chatID);
+    messageData.sendMessage(message, widget.chatID);
     setState(() {
       _isComposingMessage = false;
       // _messages.insert(0, message);
