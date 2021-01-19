@@ -17,3 +17,4 @@ A social calendar application built with flutter.
   - adding contacts and creating chats with contacts
   - invite contacts in event creation
   - basic style for chats page and contacts page
+  - create group chats

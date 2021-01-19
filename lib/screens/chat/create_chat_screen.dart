@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../services/services.dart';
 import '../../app_state/user_state.dart';
 import '../../models/models.dart';
+import 'package:flutter_calendar/components/contact_list_tile.dart';
 
 class CreateChatScreen extends StatefulWidget {
   @override
@@ -80,9 +81,9 @@ class _CreateChatScreenState extends State<CreateChatScreen> {
 
   List<Widget> _buildAllContacts() {
     return _contacts.map((contact) {
-      return InkWell(
-        child: Text('Contact: ${contact.displayName}'),
-        onTap: () => _createChat([contact]),
+      return ContactListTile(
+        contact: contact,
+        onTapFunc: () => _createChat([contact]),
       );
     }).toList();
   }
