@@ -69,8 +69,7 @@ class HomeState extends State<Home> {
           size: 20,
         ),
         label: 'Chat',
-      ),
-      BottomNavigationBarItem(
+      ), BottomNavigationBarItem(
         icon: Icon(
           FontAwesomeIcons.user,
           size: 20,

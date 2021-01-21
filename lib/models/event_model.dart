@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'member_model.dart';
 
 class EventModel {
   final String title;
   final String notes;
   final String dateID;
   final DateTime timestamp;
-  final List members;
+  final List<MemberModel> members;
   final String eventID;
 
   EventModel({
@@ -25,11 +26,19 @@ class EventModel {
   factory EventModel.fromMap(Map<String, dynamic> data) {
     Timestamp _timestampFromDB = data['timeStamp'] ?? Timestamp.now();
     DateTime _timestamp = _timestampFromDB.toDate();
+    Map<String, dynamic> _tempMembers = data['members'] ??
+        {
+          '': {'': ''}
+        };
+    List<MemberModel> _members = _tempMembers.keys.map((k) {
+      return MemberModel.fromMap(member: _tempMembers[k], uid: k);
+    }).toList();
+
     return EventModel(
       title: data['title'] ?? '',
       notes: data['notes'] ?? '',
       dateID: data['dateID'] ?? '',
-      members: data['members'] ?? [''],
+      members: _members,
       // time: data['time'] ?? '',
       timestamp: _timestamp,
       eventID: data['eventID'] ?? '',
@@ -37,13 +46,21 @@ class EventModel {
   }
 
   Map<String, dynamic> toMap() {
+    Map mapMembers = {};
+    members.forEach((member) {
+      Map mapMember = member.toMap();
+      mapMembers = {
+        ...mapMembers,
+        ...mapMember,
+      };
+    });
     return {
       'title': title,
       'dateID': dateID,
       // 'time': time,
       'eventID': eventID,
       'notes': notes,
-      'members': members,
+      'members': mapMembers,
       'timeStamp': timestamp,
     };
   }

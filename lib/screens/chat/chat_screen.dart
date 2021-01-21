@@ -1,14 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 // custom lib
+import '../../app_state/user_state.dart';
 import 'chat_message.dart';
 import '../../services/services.dart';
 import '../../models/models.dart';
 
 class Chat extends StatefulWidget {
   final String chatID;
-  final Map members;
+  final List<MemberModel> members;
   Chat({this.chatID, this.members});
   @override
   _ChatState createState() => _ChatState();
@@ -16,16 +17,25 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> with TickerProviderStateMixin {
   MessageData messageData = locator<MessageData>();
-  User user = FirebaseAuth.instance.currentUser;
+  UserModel user;
   final _textController = TextEditingController();
 
   final FocusNode _focusNode = FocusNode();
   bool _isComposingMessage = false;
 
+  @override
+  void initState() {
+    super.initState();
+    user = Provider.of<UserState>(context, listen: false).currentUserModel;
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.chatID),
+        // * needs doing properly
+        title: widget.members.length > 1
+            ? Text(widget.members[0].displayName)
+            : Text(user.displayName),
       ),
       body: Column(
         children: [

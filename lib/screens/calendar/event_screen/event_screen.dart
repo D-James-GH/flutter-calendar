@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 // custom lib
+import '../../shared/pick_contact_screen.dart';
 import '../../../services/services.dart';
 import '../../../models/models.dart';
 import '../../../app_state/calendar_state.dart';
+import '../../../app_state/user_state.dart';
 
 class EventScreen extends StatefulWidget {
   final DateTime dateObject;
@@ -28,24 +30,33 @@ class _EventScreenState extends State<EventScreen> {
   final formKey = GlobalKey<FormState>();
   // CalendarBloc _calendarBloc;
   CalendarState calendarState;
-
+  UserModel _user;
   TimeOfDay _time;
   String _title;
   String _notes;
   EventModel _event;
+  List<MemberModel> _members = [];
 
   @override
   void initState() {
     super.initState();
     // _calendarBloc = BlocProvider.of<CalendarBloc>(context);
+    _user = Provider.of<UserState>(context, listen: false).currentUserModel;
     if (widget.edit == true) {
       calendarState = Provider.of<CalendarState>(context, listen: false);
-
       _event = calendarState.events[widget.dateID][widget.index];
+      _members = _event.members;
       _time = TimeOfDay.fromDateTime(_event.timestamp);
       _title = _event.title;
       _notes = _event.notes;
     } else {
+      _members.add(
+        MemberModel(
+          uid: _user.uid,
+          role: Role.admin,
+          displayName: _user.displayName,
+        ),
+      );
       _time = new TimeOfDay.now();
     }
   }
@@ -127,6 +138,10 @@ class _EventScreenState extends State<EventScreen> {
                     labelStyle: TextStyle(fontSize: 18)),
               ),
               RaisedButton(
+                onPressed: _inviteMember,
+                child: Text('Invite Contacts'),
+              ),
+              RaisedButton(
                 onPressed: () => onSubmit(context),
                 child: Text('Save'),
               ),
@@ -172,10 +187,28 @@ class _EventScreenState extends State<EventScreen> {
     }
   }
 
+  void _inviteMember() {
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute(
+        settings: RouteSettings(name: '/createChat'),
+        builder: (_) => PickContactScreen(
+          onTapContactFunction: _addToMembers,
+        ),
+      ),
+    );
+  }
+
+  _addToMembers(UserModel contact) {
+    _members.add(MemberModel(
+      displayName: contact.displayName,
+      uid: contact.uid,
+      role: Role.member,
+    ));
+  }
+
   void onSubmit(BuildContext context) {
     CalendarState _calendarState =
         Provider.of<CalendarState>(context, listen: false);
-    User user = Provider.of<User>(context, listen: false);
     String _eventID = widget.edit == true ? _event.eventID : Uuid().v4();
     DateTime _timeStamp = widget.edit == true
         ? new DateTime(
@@ -192,7 +225,7 @@ class _EventScreenState extends State<EventScreen> {
       notes: _notes,
       dateID: widget.dateID,
       timestamp: _timeStamp,
-      members: [user.uid],
+      members: _members,
       eventID: _eventID,
     );
 

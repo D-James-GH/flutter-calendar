@@ -30,6 +30,7 @@ class CalendarState extends ChangeNotifier {
       docRefIn: event.eventID,
     );
     var _currentEvents = _events;
+    // If creating an event for the first time indexOfEvent will return -1
     var indexOfEvent =
         _currentEvents[dateID].indexWhere((e) => e.eventID == event.eventID);
     if (indexOfEvent == -1) {

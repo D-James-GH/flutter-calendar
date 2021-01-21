@@ -144,7 +144,7 @@ class MessageData {
       for (UserModel contact in contacts) {
         members[contact.uid] = {
           'displayName': contact.displayName,
-          'role': 'member',
+          'role': Role.member.toShortString,
         };
       }
     }

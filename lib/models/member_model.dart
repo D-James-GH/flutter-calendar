@@ -1,14 +1,32 @@
+import 'package:flutter/foundation.dart';
+
+enum Role { _from, admin, member, noRole }
+
+extension RoleExtension on Role {
+  String get toShortString => describeEnum(this);
+  operator [](String key) => (name) {
+        switch (name) {
+          case 'admin':
+            return Role.admin;
+          case 'member':
+            return Role.member;
+          default:
+            return Role.noRole;
+        }
+      }(key);
+}
+
 class MemberModel {
   final String uid;
   final String displayName;
-  final String role;
-  ChatMember({this.uid, this.displayName, this.role});
+  final Role role;
+  MemberModel({this.uid, this.displayName, this.role});
 
-  factory ChatMember.fromMap({Map<String, dynamic> member, String uid = ''}) {
-    return ChatMember(
+  factory MemberModel.fromMap({Map<String, dynamic> member, String uid = ''}) {
+    return MemberModel(
       uid: uid,
       displayName: member['displayName'] ?? '',
-      role: member['role'] ?? '',
+      role: Role._from[member['role'] ?? ''],
     );
   }
 
@@ -16,7 +34,7 @@ class MemberModel {
     return {
       "uid": {
         "displayName": displayName,
-        "role": role,
+        "role": role.toShortString,
       }
     };
   }

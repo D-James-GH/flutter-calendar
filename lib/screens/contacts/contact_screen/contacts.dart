@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 // custom lib
 import '../../../services/services.dart';
-import 'add_contact_form.dart';
+import '../../../components/add_contact_form.dart';
 import '../../../app_state/user_state.dart';
 import '../../../models/models.dart';
 

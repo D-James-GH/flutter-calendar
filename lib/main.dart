@@ -18,7 +18,6 @@ Future<void> main() async {
   setupLocator();
   runApp(MyCalendarApp());
 }
-
 class MyCalendarApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

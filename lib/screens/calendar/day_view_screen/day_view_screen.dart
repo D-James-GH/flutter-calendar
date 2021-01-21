@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/models/models.dart';
 import 'package:provider/provider.dart';
 
 // custom lib
@@ -27,7 +28,7 @@ class DayView extends StatelessWidget {
       ),
       body: Consumer<CalendarState>(
         builder: (context, calendar, child) {
-          var events = [];
+          List<EventModel> events = [];
           if (calendar.events[dateID] != null) {
             events = calendar.events[dateID];
           }
@@ -60,6 +61,9 @@ class DayView extends StatelessWidget {
                             Text(TimeOfDay.fromDateTime(events[index].timestamp)
                                 .format(context)),
                             Text(events[index].notes ?? ' '),
+                            Row(
+                              children: _buildMembers(events, index),
+                            )
                           ],
                         ),
                       ),
@@ -74,6 +78,13 @@ class DayView extends StatelessWidget {
         child: Icon(Icons.add),
       ),
     );
+  }
+
+  List<Widget> _buildMembers(List<EventModel> events, index) {
+    return events[index]
+        .members
+        .map((member) => Text(member.displayName))
+        .toList();
   }
 
   void _gotoEventScreen([int index, bool edit]) {

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 // custom lib
+import '../../models/member_model.dart';
+import '../../app_state/user_state.dart';
 import '../../models/models.dart';
 import '../../services/services.dart';
+import '../shared/pick_contact_screen.dart';
 import 'all_chat_screens.dart';
 
 class AllChatScreen extends StatelessWidget {
@@ -24,7 +28,9 @@ class AllChatScreen extends StatelessWidget {
                 Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
                     settings: RouteSettings(name: '/createChat'),
-                    builder: (_) => CreateChatScreen(),
+                    builder: (_) => PickContactScreen(
+                      onTapContactFunction: _createChat,
+                    ),
                   ),
                 );
               }),
@@ -41,7 +47,7 @@ class AllChatScreen extends StatelessWidget {
                   itemBuilder: (context, i) {
                     return ListTile(
                       leading: Icon(Icons.person),
-                      title: _listMembers(chats[0].members),
+                      title: _listMembers(chats[i].members, context),
                       subtitle: Text(chats[i].latestMessage),
                       trailing: Text('Time Sent'),
                       onTap: () =>
@@ -55,10 +61,24 @@ class AllChatScreen extends StatelessWidget {
     );
   }
 
-  Widget _listMembers(Map members) {
+  Widget _listMembers(List<MemberModel> members, BuildContext context) {
+    UserState _userState = Provider.of<UserState>(context);
     String output = '';
-    members.keys.forEach((e) => output += e);
+    members.forEach((member) {
+      if (members.length > 1 &&
+          _userState.currentUserModel.displayName != member.displayName) {
+        output += member.displayName;
+      } else if (members.length == 1) {
+        output += member.displayName;
+      }
+    });
     return Text(output);
+  }
+
+  void _createChat(UserModel contact) {
+    // temp until you can add multiple people to chat
+    List<UserModel> contacts = [contact];
+    messageData.createChat(contacts: contacts);
   }
 
   void _gotoChat(context, chatID, members) {
@@ -74,13 +94,3 @@ class AllChatScreen extends StatelessWidget {
     );
   }
 }
-
-// children: [
-// ListTile(
-// leading: Icon(Icons.person),
-// title: Text('Members Name'),
-// subtitle: Text('Some Recent message'),
-// trailing: Text('Time Sent'),
-// onTap: () => _gotoChat(context),
-// )
-// ],
