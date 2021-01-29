@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/app_state/user_state.dart';
+import 'package:provider/provider.dart';
 
 // custom lib
-import '../services/services.dart';
 
 class AddContactForm extends StatefulWidget {
   AddContactForm({Key key}) : super(key: key);
@@ -11,9 +12,8 @@ class AddContactForm extends StatefulWidget {
 }
 
 class _AddContactFormState extends State<AddContactForm> {
-  String _email;
+  TextEditingController _emailController = TextEditingController();
   bool _contactNotFound = false;
-  UserData userData = locator<UserData>();
 
   @override
   void initState() {
@@ -31,11 +31,11 @@ class _AddContactFormState extends State<AddContactForm> {
                 child: Container(
                   child: TextField(
                     onChanged: (value) => setState(() {
-                      if (value == '') {
+                      if (_emailController.text == '') {
                         _contactNotFound = false;
                       }
-                      _email = value;
                     }),
+                    controller: _emailController,
                     decoration: InputDecoration(hintText: "Add a Contact"),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
@@ -45,7 +45,7 @@ class _AddContactFormState extends State<AddContactForm> {
                 margin: EdgeInsets.symmetric(horizontal: 4.0),
                 child: IconButton(
                   icon: Icon(Icons.add),
-                  onPressed: addContact,
+                  onPressed: () => addContact(context),
                 ),
               ),
             ],
@@ -61,16 +61,22 @@ class _AddContactFormState extends State<AddContactForm> {
     );
   }
 
-  void addContact() async {
-    bool result = await userData.createContact(_email);
+  void addContact(BuildContext context) async {
+    UserState userState = Provider.of<UserState>(context, listen: false);
+    bool result = await userState.addContactFromEmail(_emailController.text);
     if (result == true) {
-      setState(() {
-        _email = '';
-      });
+      _emailController.clear();
     } else {
       setState(() {
         _contactNotFound = true;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    _emailController.dispose();
+    super.dispose();
   }
 }

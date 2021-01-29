@@ -2,13 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_calendar/services/db.dart';
 import 'package:flutter_calendar/models/models.dart';
 import 'package:flutter_calendar/services/service_locator.dart';
+import 'package:intl/intl.dart';
 
 class CalendarState extends ChangeNotifier {
   CalendarData _userData = locator<CalendarData>();
   Map<String, List<EventModel>> _events = {};
-  Map<String, List<EventModel>> get events => _events;
+  DateTime _currentDate = DateTime.now();
 
-  Future<void> fetchEventFromDB({String dateID}) async {
+  // getters
+  DateTime get currentSelectedDate => _currentDate;
+
+  Map<String, List<EventModel>> get events => _events;
+  // calendar state ===================================
+  void selectDate(DateTime date) {
+    _currentDate = date;
+    notifyListeners();
+  }
+
+  void nextMonth() {
+    _currentDate = new DateTime(
+        _currentDate.year, _currentDate.month + 1, _currentDate.day);
+    notifyListeners();
+  }
+
+  void prevMonth() {
+    _currentDate = new DateTime(
+        _currentDate.year, _currentDate.month - 1, _currentDate.day);
+    notifyListeners();
+  }
+
+  String calcDateID(DateTime dateObject) {
+    String dateID = DateFormat.yMMMd().format(dateObject).toString();
+    dateID = dateID.replaceAll(' ', '');
+    dateID = dateID.replaceAll(',', '');
+    return dateID;
+  }
+
+  // event state ======================================
+  Future<void> fetchEventFromDB(String dateID) async {
     final calEvents = await _userData.getEvents(dateID);
     //  store events grouped by day for easier display
     _events[dateID] = calEvents; // possibly ?? []

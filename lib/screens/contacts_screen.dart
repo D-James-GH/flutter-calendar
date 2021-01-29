@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 // custom lib
-import '../../../services/services.dart';
-import '../../../components/add_contact_form.dart';
-import '../../../app_state/user_state.dart';
-import '../../../models/models.dart';
+import '../services/services.dart';
+import '../components/add_contact_form.dart';
+import '../app_state/user_state.dart';
+import '../models/models.dart';
 
 enum OptionsMenu { logout }
 
@@ -17,19 +17,17 @@ class Contacts extends StatefulWidget {
 
 class _ContactsState extends State<Contacts> {
   final AuthService auth = AuthService();
-  UserState _userState;
-  List<UserModel> _contacts;
 
   @override
   void initState() {
     super.initState();
-    _userState = Provider.of<UserState>(context, listen: false);
-    _contacts = _userState.contacts;
   }
 
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context);
+    UserState userState = Provider.of<UserState>(context);
+    List<UserModel> contacts = userState.contacts;
     if (user != null) {
       return Scaffold(
         appBar: AppBar(
@@ -57,7 +55,7 @@ class _ContactsState extends State<Contacts> {
         body: Column(
           children: [
             AddContactForm(),
-            ..._buildAllContacts(),
+            ..._buildAllContacts(contacts),
           ],
         ),
       );
@@ -68,8 +66,8 @@ class _ContactsState extends State<Contacts> {
     }
   }
 
-  List<Widget> _buildAllContacts() {
-    return _contacts
+  List<Widget> _buildAllContacts(List<UserModel> contacts) {
+    return contacts
         .map((contact) => Text('Contact: ${contact.displayName}'))
         .toList();
   }

@@ -208,16 +208,16 @@ class UserData {
     return userRef.doc(uid).get().then((doc) => UserModel.fromMap(doc.data()));
   }
 
-  Future<bool> createContact(String email) async {
+  Future<UserModel> createContact(String email) async {
     List<UserModel> userContact = await getUserByEmail(email);
     User loggedInUser = _auth.currentUser;
     if (userContact != null && loggedInUser != null) {
       userRef.doc(loggedInUser.uid).set({
         'contacts': FieldValue.arrayUnion([userContact[0].uid])
       }, SetOptions(merge: true));
-      return true;
+      return userContact[0];
     } else {
-      return false;
+      return null;
     }
   }
 }

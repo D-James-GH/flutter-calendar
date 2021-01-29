@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // custom lib
-import '../../app_state/user_state.dart';
+import '../app_state/user_state.dart';
 import 'chat_message.dart';
-import '../../services/services.dart';
-import '../../models/models.dart';
+import '../services/services.dart';
+import '../models/models.dart';
 
 class Chat extends StatefulWidget {
   final String chatID;

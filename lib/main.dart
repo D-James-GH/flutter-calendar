@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -18,6 +20,7 @@ Future<void> main() async {
   setupLocator();
   runApp(MyCalendarApp());
 }
+
 class MyCalendarApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,6 +38,15 @@ class MyCalendarApp extends StatelessWidget {
         ],
         title: 'Calendar App',
         home: Login(),
+        // move to separate file when is gets big
+        theme: ThemeData(
+          primaryColor: const Color(0xff3AAAB7),
+          accentColor: const Color(0xff984DB8),
+          textTheme: Theme.of(context).textTheme.apply(
+                bodyColor: const Color(0xff3AAAB7),
+                displayColor: const Color(0xff3AAAB7),
+              ),
+        ),
       ),
     );
   }

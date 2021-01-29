@@ -6,8 +6,10 @@ class EventModel {
   final String notes;
   final String dateID;
   final DateTime timestamp;
-  final List<MemberModel> members;
+  final List<MemberModel> memberRoles;
   final String eventID;
+  // below is only used to get the event from the database
+  final List<String> members;
 
   EventModel({
     this.notes,
@@ -15,30 +17,32 @@ class EventModel {
     // this.time,
     this.title,
     this.eventID,
-    this.members,
+    this.memberRoles,
     this.timestamp,
-  });
+  }) : members = memberRoles != null
+            ? memberRoles.map((member) => member.uid).toList()
+            : null;
 
   @override
   String toString() =>
-      'EventModel { notes: $notes, dateID: $dateID, title: $title, eventID: $eventID, members: $members, timestamp: $timestamp }';
+      'EventModel { notes: $notes, dateID: $dateID, title: $title, eventID: $eventID, members: $memberRoles, timestamp: $timestamp }';
 
   factory EventModel.fromMap(Map<String, dynamic> data) {
     Timestamp _timestampFromDB = data['timeStamp'] ?? Timestamp.now();
     DateTime _timestamp = _timestampFromDB.toDate();
-    Map<String, dynamic> _tempMembers = data['members'] ??
+    Map<String, dynamic> _tempMemberRoles = data['memberRoles'] ??
         {
           '': {'': ''}
         };
-    List<MemberModel> _members = _tempMembers.keys.map((k) {
-      return MemberModel.fromMap(member: _tempMembers[k], uid: k);
+    List<MemberModel> _memberRoles = _tempMemberRoles.keys.map((k) {
+      return MemberModel.fromMap(member: _tempMemberRoles[k], uid: k);
     }).toList();
 
     return EventModel(
       title: data['title'] ?? '',
       notes: data['notes'] ?? '',
       dateID: data['dateID'] ?? '',
-      members: _members,
+      memberRoles: _memberRoles,
       // time: data['time'] ?? '',
       timestamp: _timestamp,
       eventID: data['eventID'] ?? '',
@@ -46,21 +50,22 @@ class EventModel {
   }
 
   Map<String, dynamic> toMap() {
-    Map mapMembers = {};
-    members.forEach((member) {
+    Map mapMemberRoles = {};
+    memberRoles.forEach((member) {
       Map mapMember = member.toMap();
-      mapMembers = {
-        ...mapMembers,
+      mapMemberRoles = {
+        ...mapMemberRoles,
         ...mapMember,
       };
     });
     return {
       'title': title,
+      'members': members,
       'dateID': dateID,
       // 'time': time,
       'eventID': eventID,
       'notes': notes,
-      'members': mapMembers,
+      'memberRoles': mapMemberRoles,
       'timeStamp': timestamp,
     };
   }

@@ -33,4 +33,15 @@ class UserState extends ChangeNotifier {
       _contacts.add(contact);
     });
   }
+
+  Future<bool> addContactFromEmail(String email) async {
+    print("$email from state");
+    UserModel newContact = await _userData.createContact(email);
+    if (newContact != null) {
+      _contacts.add(newContact);
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
 }

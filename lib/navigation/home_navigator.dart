@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
 // custom lib
-import '../screens/screens.dart';
-import '../app_state/calendar_state.dart';
-import '../app_state/user_state.dart';
-import '../services/services.dart';
+
+import 'chat_navigator.dart';
+import 'calendar_navigator.dart';
+import 'contacts_navigator.dart';
+import 'navigation_keys.dart';
 
 // GlobalKey<NavigatorState> _calendarNavKey = GlobalKey<NavigatorState>();
 class Home extends StatefulWidget {
@@ -18,9 +18,9 @@ class HomeState extends State<Home> {
   int _currentTabIndex = 0;
 
   Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {
-    0: NavService.calendarNavState,
-    1: NavService.chatNavState,
-    2: NavService.profileNavState,
+    0: NavigationKeys.calendarNavState,
+    1: NavigationKeys.chatNavState,
+    2: NavigationKeys.profileNavState,
   };
 
   @override
@@ -47,6 +47,7 @@ class HomeState extends State<Home> {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentTabIndex,
           type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
           items: _buildBottomNav(),
           onTap: (index) => _setCurrentTab(index),
         ),
@@ -69,7 +70,8 @@ class HomeState extends State<Home> {
           size: 20,
         ),
         label: 'Chat',
-      ), BottomNavigationBarItem(
+      ),
+      BottomNavigationBarItem(
         icon: Icon(
           FontAwesomeIcons.user,
           size: 20,

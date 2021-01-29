@@ -1,7 +1,12 @@
-export 'calendar/all_calendar_screens.dart';
-export './contacts/contact_screen/contacts.dart';
+export 'contacts_screen.dart';
+//calendar screens
+export 'calendar_screen.dart';
+
+// chat screens
+export 'all_chats.dart';
+export 'chat_message.dart';
+export 'chat_screen.dart';
+//other screens
+export 'something_went_wrong.dart';
+export 'pick_contact_screen.dart';
 export 'login_screen.dart';
-export '../screens/home_screen.dart';
-export 'chat/chat_navigator.dart';
-export 'calendar/calendar_navigator.dart';
-export 'contacts/contacts_navigator.dart';

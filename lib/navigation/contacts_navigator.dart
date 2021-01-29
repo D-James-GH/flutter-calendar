@@ -1,30 +1,22 @@
 import 'package:flutter/material.dart';
 
 // custom lib
-import '../../services/services.dart';
-import 'all_chats.dart';
+import '../screens/something_went_wrong.dart';
+import '../screens/contacts_screen.dart';
+import 'navigation_keys.dart';
 
-import '../something_went_wrong.dart';
-
-class ChatNavigator extends StatefulWidget {
-  @override
-  _ChatNavigatorState createState() => _ChatNavigatorState();
-}
-
-class _ChatNavigatorState extends State<ChatNavigator> {
+class ContactNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      key: NavService.chatNavState,
+      key: NavigationKeys.profileNavState,
       onGenerateRoute: (RouteSettings settings) {
         return MaterialPageRoute(
             settings: settings,
             builder: (BuildContext context) {
               switch (settings.name) {
                 case '/':
-                  return AllChatScreen();
-                // case '/chat':
-                // return Chat();
+                  return Contacts();
                 default:
                   return SomethingWentWrong();
               }

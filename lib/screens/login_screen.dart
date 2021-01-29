@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // custom lib
-import 'home_screen.dart';
+import '../navigation/home_navigator.dart';
 import '../services/services.dart';
 
 class Login extends StatefulWidget {

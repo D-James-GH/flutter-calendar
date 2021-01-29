@@ -32,7 +32,7 @@ class MemberModel {
 
   Map toMap() {
     return {
-      "uid": {
+      uid: {
         "displayName": displayName,
         "role": role.toShortString,
       }

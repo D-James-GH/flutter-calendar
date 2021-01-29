@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 // custom lib
-import '../../services/services.dart';
-import '../../app_state/user_state.dart';
-import '../../models/models.dart';
-import '../../components/contact_list_tile.dart';
+import '../services/services.dart';
+import '../app_state/user_state.dart';
+import '../models/models.dart';
+import '../components/contact_list_tile.dart';
 
 class PickContactScreen extends StatefulWidget {
   final Function onTapContactFunction;

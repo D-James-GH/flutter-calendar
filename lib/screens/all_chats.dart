@@ -3,12 +3,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 // custom lib
-import '../../models/member_model.dart';
-import '../../app_state/user_state.dart';
-import '../../models/models.dart';
-import '../../services/services.dart';
-import '../shared/pick_contact_screen.dart';
-import 'all_chat_screens.dart';
+import '../models/member_model.dart';
+import '../app_state/user_state.dart';
+import '../models/models.dart';
+import '../services/services.dart';
+import 'pick_contact_screen.dart';
+import 'screens.dart';
 
 class AllChatScreen extends StatelessWidget {
   final MessageData messageData = locator<MessageData>();
