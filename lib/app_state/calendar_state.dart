@@ -8,12 +8,18 @@ class CalendarState extends ChangeNotifier {
   CalendarData _userData = locator<CalendarData>();
   Map<String, List<EventModel>> _events = {};
   DateTime _currentDate = DateTime.now();
+  EventModel editFormEvent = EventModel();
 
   // getters
   DateTime get currentSelectedDate => _currentDate;
 
   Map<String, List<EventModel>> get events => _events;
   // calendar state ===================================
+  void setEditFormEvent(EventModel event) {
+    this.editFormEvent = event;
+    notifyListeners();
+  }
+
   void selectDate(DateTime date) {
     _currentDate = date;
     notifyListeners();
@@ -55,7 +61,8 @@ class CalendarState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> editEvent({String dateID, EventModel event}) async {
+  Future<void> saveEventToDB(EventModel event) async {
+    String dateID = event.dateID;
     await _userData.createEvent(
       data: event,
       docRefIn: event.eventID,

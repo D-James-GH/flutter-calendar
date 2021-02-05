@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_calendar/app_state/user_state.dart';
+import 'package:flutter_calendar/components/list_member_avatars.dart';
 import 'package:flutter_calendar/models/models.dart';
-import 'package:provider/provider.dart';
-import 'user_avatar.dart';
 
 class EventTile extends StatelessWidget {
   final Function gotoEvent;
@@ -57,31 +55,14 @@ class EventTile extends StatelessWidget {
             Container(
               width: 75,
               height: double.infinity,
-              child: Row(
-                mainAxisAlignment: event.members.length <= 2
-                    ? MainAxisAlignment.center
-                    : MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: _buildMembers(context),
+              child: ListMemberAvatars(
+                members: event.memberRoles,
+                maxNum: 2,
               ),
-            )
+            ),
           ],
         ),
       ),
     );
-  }
-
-  List<Widget> _buildMembers(BuildContext context) {
-    UserState userState = Provider.of<UserState>(context);
-    List<Widget> members = event.memberRoles.map((member) {
-      if (member.uid != userState.currentUserModel.uid) {
-        return UserAvatar(user: member);
-      }
-      return Text('');
-    }).toList();
-    if (members == null) {
-      return [Text('')];
-    }
-    return members;
   }
 }

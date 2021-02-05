@@ -16,7 +16,7 @@ class Weekdays extends StatelessWidget {
         .map((day) => Container(
               margin: EdgeInsets.all(2),
               height: 20,
-              width: 40,
+              width: 43,
               child: Center(
                 child: Text(
                   day,

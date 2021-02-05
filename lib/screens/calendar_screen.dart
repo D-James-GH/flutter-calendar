@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../app_state/calendar_state.dart';
 import '../components/calendar.dart';
-import '../components/events.dart';
+import '../components/events_list.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class CalendarScreen extends StatefulWidget {

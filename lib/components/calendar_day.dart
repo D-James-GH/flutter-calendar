@@ -17,20 +17,18 @@ class CalendarDay extends StatefulWidget {
 }
 
 class _CalendarDayState extends State<CalendarDay> {
-  String dateID;
   @override
   void initState() {
     super.initState();
     // fetch any events from the database
-    CalendarState calendarState =
-        Provider.of<CalendarState>(context, listen: false);
-    dateID = calendarState.calcDateID(widget.dateObject);
-    calendarState.fetchEventFromDB(dateID);
   }
 
   @override
   Widget build(BuildContext context) {
+    String dateID;
     CalendarState calendarState = Provider.of<CalendarState>(context);
+    dateID = calendarState.calcDateID(widget.dateObject);
+    calendarState.fetchEventFromDB(dateID);
     TextStyle dateNumberStyle;
     if (calendarState.currentSelectedDate == widget.dateObject) {
       dateNumberStyle = TextStyle(
@@ -46,8 +44,8 @@ class _CalendarDayState extends State<CalendarDay> {
       onTap: () => calendarState.selectDate(widget.dateObject),
       child: Container(
         margin: EdgeInsets.all(2),
-        height: 45,
-        width: 45,
+        height: 43,
+        width: 43,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: calendarState.currentSelectedDate == widget.dateObject
@@ -73,7 +71,11 @@ class _CalendarDayState extends State<CalendarDay> {
                   spacing: 1,
                   clipBehavior: Clip.hardEdge,
                   children: calendarState.events[dateID] != null
-                      ? _eventDot(calendarState.events[dateID])
+                      // if the day has events. The color must change is day if the day is selected.
+                      ? _eventDot(
+                          calendarState.events[dateID],
+                          calendarState.currentSelectedDate ==
+                              widget.dateObject)
                       : [Text('')],
                 ),
               ),
@@ -84,14 +86,15 @@ class _CalendarDayState extends State<CalendarDay> {
     );
   }
 
-  List<Widget> _eventDot(List<EventModel> events) {
+  List<Widget> _eventDot(List<EventModel> events, bool isSelected) {
     return events
         .map((e) => Container(
               height: 6,
               width: 6,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Theme.of(context).primaryColor,
+                color:
+                    isSelected ? Theme.of(context).primaryColor : Colors.white,
               ),
               child: null,
             ))
