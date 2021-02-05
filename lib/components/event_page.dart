@@ -59,6 +59,12 @@ class _EventPageState extends State<EventPage> {
                       initialValue: currentEvent.title,
                       onSaved: (String value) => _onSaved(title: value),
                       decoration: inputDecoration,
+                      validator: (value) {
+                        if (value == '') {
+                          return 'Title must not be empty';
+                        }
+                        return null;
+                      },
                     )
                   : Text(
                       currentEvent.title,

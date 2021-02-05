@@ -3,10 +3,8 @@
  -  making the calendar collapsible 
 
 
-## Todo
+## Small Todos
 
-- animate calendar changing from month view to week view
-- invited member events should show on their calendar
 - shouldn't be able to create two chats with identical members
 - change firebase rules
 - sync latest message with the chats page
@@ -14,6 +12,12 @@
 - shouldn't show your own display name on a chat topper
 
 
-## Feature time line/To-do
+
+## Features to impliment
 
 - create group chats
+- User settings, which should include
+    - Changing the font size to bigger
+    - Edit display name and details
+    - Password changing and recovery
+    - Add profile picture

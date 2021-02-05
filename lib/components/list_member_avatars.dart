@@ -44,7 +44,7 @@ class ListMemberAvatars extends StatelessWidget {
                         fontSize: 12,
                       ),
                     )
-                  : Text(''),
+                  : Container(),
             ],
           ),
         );

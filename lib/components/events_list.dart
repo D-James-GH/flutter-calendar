@@ -94,14 +94,21 @@ class _EventsState extends State<Events> {
   }
 
   void _toggleEditMode() {
-    setState(() {
-      _isEditing = !_isEditing;
-      _editEventPage = EventPage(
-        formKey: _formKey,
-        isEditable: _isEditing,
-        gotoListView: _gotoListView,
-      );
-    });
+    if (_formKey.currentState.validate() == false) {
+      setState(() {
+        _isEditing = !_isEditing;
+      });
+      _gotoListView();
+    } else {
+      setState(() {
+        _isEditing = !_isEditing;
+        _editEventPage = EventPage(
+          formKey: _formKey,
+          isEditable: _isEditing,
+          gotoListView: _gotoListView,
+        );
+      });
+    }
   }
 
   void _gotoEvent([EventModel event]) {

@@ -31,10 +31,16 @@ class EventsHeader extends StatelessWidget {
     CalendarState calendarState = Provider.of<CalendarState>(context);
     DateTime currentDate = calendarState.currentSelectedDate;
 
+    // check if current date is the same as event date,
+    // if not the event page should be list page
+    if (calendarState.calcDateID(currentDate) !=
+        calendarState.editFormEvent.dateID) {
+      gotoListView();
+    }
+
     return Container(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        // mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _displayLeadingIcon(context),
           isListViewOpen
@@ -43,9 +49,6 @@ class EventsHeader extends StatelessWidget {
                   width: 10,
                 ),
           ..._buildDate(currentDate, context),
-          // ...(isListViewOpen
-          //     ? _buildDate(currentDate, context)
-          //     : [Text(currentEvent.title, style: headingText)]),
           Expanded(
             child: Text(''),
           ),
