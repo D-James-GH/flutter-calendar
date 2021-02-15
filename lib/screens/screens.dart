@@ -4,7 +4,7 @@ export 'calendar_screen.dart';
 
 // chat screens
 export 'all_chats.dart';
-export 'chat_message.dart';
+export '../components/chat_message.dart';
 export 'chat_screen.dart';
 //other screens
 export 'something_went_wrong.dart';

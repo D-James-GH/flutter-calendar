@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/screens/contact_screen.dart';
 
 // custom lib
 import '../screens/something_went_wrong.dart';
@@ -9,7 +10,7 @@ class ContactNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Navigator(
-      key: NavigationKeys.profileNavState,
+      key: NavigationKeys.contactNavState,
       onGenerateRoute: (RouteSettings settings) {
         return MaterialPageRoute(
             settings: settings,
@@ -17,6 +18,11 @@ class ContactNavigator extends StatelessWidget {
               switch (settings.name) {
                 case '/':
                   return Contacts();
+                case ContactScreen.routeName:
+                  ContactsScreenArguments args = settings.arguments;
+                  return ContactScreen(
+                    contact: args.contact,
+                  );
                 default:
                   return SomethingWentWrong();
               }

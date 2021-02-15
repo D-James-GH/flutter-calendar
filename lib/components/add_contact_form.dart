@@ -31,7 +31,7 @@ class _AddContactFormState extends State<AddContactForm> {
                 child: Container(
                   child: TextField(
                     onChanged: (value) => setState(() {
-                      if (_emailController.text == '') {
+                      if (_emailController.text.isEmpty) {
                         _contactNotFound = false;
                       }
                     }),

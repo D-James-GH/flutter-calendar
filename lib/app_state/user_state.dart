@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/services/db.dart';
-import 'package:flutter_calendar/models/models.dart';
-import 'package:flutter_calendar/services/service_locator.dart';
+import 'package:flutter_calendar/services/services.dart';
+import '../models/models.dart';
 
 class UserState extends ChangeNotifier {
-  UserData _userData = locator<UserData>();
+  UserDB _userData = locator<UserDB>();
   bool _doneInitFetch = false;
   UserModel _currentUser;
   List<UserModel> _contacts = [];

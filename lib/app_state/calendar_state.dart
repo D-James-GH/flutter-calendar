@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/services/db.dart';
+import 'package:flutter_calendar/services/calendar_db.dart';
 import 'package:flutter_calendar/models/models.dart';
 import 'package:flutter_calendar/services/service_locator.dart';
 import 'package:intl/intl.dart';
 
 class CalendarState extends ChangeNotifier {
-  CalendarData _userData = locator<CalendarData>();
+  CalendarDB _userData = locator<CalendarDB>();
   Map<String, List<EventModel>> _events = {};
   DateTime _currentDate = DateTime.now();
   EventModel editFormEvent = EventModel();
@@ -55,6 +55,7 @@ class CalendarState extends ChangeNotifier {
   }
 
   Future<void> deleteEvent({String eventID, String dateID}) async {
+    // TODO: implement delete event in app
     await _userData.deleteEvent(eventID);
     var _currentEvents = _events;
     _currentEvents[dateID].removeWhere((e) => e.eventID == eventID);
@@ -63,10 +64,8 @@ class CalendarState extends ChangeNotifier {
 
   Future<void> saveEventToDB(EventModel event) async {
     String dateID = event.dateID;
-    await _userData.createEvent(
-      data: event,
-      docRefIn: event.eventID,
-    );
+    // create event in db
+    await _userData.createEvent(event);
     var _currentEvents = _events;
     // If creating an event for the first time indexOfEvent will return -1
     var indexOfEvent =

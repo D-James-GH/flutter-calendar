@@ -18,7 +18,9 @@ class EventTile extends StatelessWidget {
     final _textStyle = TextStyle(fontSize: 13);
     return InkWell(
       onTap: gotoEvent,
-      child: IntrinsicHeight(
+      child: SizedBox(
+        height: 80,
+        width: double.infinity,
         child: Container(
           padding: EdgeInsets.only(top: 2),
           child: Row(
@@ -32,7 +34,8 @@ class EventTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      TimeOfDay.fromDateTime(event.timestamp).format(context),
+                      TimeOfDay.fromDateTime(event.startTimestamp)
+                          .format(context),
                       style: _titleStyle,
                     ),
                     Text('3h', style: _textStyle),
@@ -56,20 +59,25 @@ class EventTile extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: EdgeInsets.only(right: 5),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(event.title,
-                                style: _titleStyle, textAlign: TextAlign.left),
-                            Text(event.notes,
-                                style: _textStyle, textAlign: TextAlign.left),
-                          ],
-                        ),
-                      ),
                       Expanded(
-                        child: Text(''),
+                        child: Container(
+                          padding: EdgeInsets.only(right: 5),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(event.title,
+                                  style: _titleStyle,
+                                  textAlign: TextAlign.left),
+                              Text(
+                                event.notes,
+                                style: _textStyle,
+                                maxLines: 3,
+                                textAlign: TextAlign.left,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                       Container(
                         width: 75,

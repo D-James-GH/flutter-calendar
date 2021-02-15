@@ -20,7 +20,7 @@ class HomeState extends State<Home> {
   Map<int, GlobalKey<NavigatorState>> _navigatorKeys = {
     0: NavigationKeys.calendarNavState,
     1: NavigationKeys.chatNavState,
-    2: NavigationKeys.profileNavState,
+    2: NavigationKeys.contactNavState,
   };
 
   @override
@@ -73,10 +73,10 @@ class HomeState extends State<Home> {
       ),
       BottomNavigationBarItem(
         icon: Icon(
-          FontAwesomeIcons.user,
+          FontAwesomeIcons.addressBook,
           size: 20,
         ),
-        label: 'Profile',
+        label: 'Contacts',
       ),
     ];
   }

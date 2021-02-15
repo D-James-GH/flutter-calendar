@@ -1,21 +1,22 @@
 # Currently under development
 - Re-doing the design to match the adobe xd 
- -  making the calendar collapsible 
-
+- add 'events with' on contact page
 
 ## Small Todos
 
-- shouldn't be able to create two chats with identical members
 - change firebase rules
-- sync latest message with the chats page
-- when creating event it shouldn't show yourself as a member
-- shouldn't show your own display name on a chat topper
-
-
 
 ## Features to impliment
 
-- create group chats
+- calendar
+    - add 'events with' on contact page
+    - Custom colors for events
+    - location of the event
+    - multi-day events
+      - eventually a holiday planner 
+- messages 
+    - Allow users to send images
+    - move messages to real-time database
 - User settings, which should include
     - Changing the font size to bigger
     - Edit display name and details

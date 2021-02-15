@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 
 // custom lib
 import 'app_state/calendar_state.dart';
+import 'app_state/chat_state.dart';
 import 'app_state/user_state.dart';
 import 'services/services.dart';
 import 'screens/screens.dart';
@@ -28,6 +29,7 @@ class MyCalendarApp extends StatelessWidget {
         ChangeNotifierProvider<CalendarState>(
             create: (context) => CalendarState()),
         ChangeNotifierProvider<UserState>(create: (context) => UserState()),
+        ChangeNotifierProvider<ChatState>(create: (context) => ChatState()),
         StreamProvider<User>.value(value: AuthService().user),
       ],
       child: MaterialApp(

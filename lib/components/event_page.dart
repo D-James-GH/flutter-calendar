@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar/app_state/calendar_state.dart';
-import 'package:flutter_calendar/components/contact_form_field.dart';
+import 'package:flutter_calendar/app_state/chat_state.dart';
+import 'package:flutter_calendar/app_state/user_state.dart';
+import 'package:flutter_calendar/components/contact_select_form_field.dart';
 import 'package:flutter_calendar/components/list_member_avatars.dart';
 import 'package:flutter_calendar/components/time_form_field.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'labeled_row.dart';
 import '../models/models.dart';
 
 class EventPage extends StatefulWidget {
@@ -52,7 +56,7 @@ class _EventPageState extends State<EventPage> {
         key: widget.formKey,
         child: Column(
           children: [
-            EventRow(
+            LabeledRow(
               label: 'Title',
               body: isEdit
                   ? TextFormField(
@@ -71,21 +75,33 @@ class _EventPageState extends State<EventPage> {
                       style: TextStyle(fontSize: 16),
                     ),
             ),
-            EventRow(
+            LabeledRow(
               label: 'Time',
               body: isEdit
-                  ? TimeFormField(
-                      onSaved: (TimeOfDay time) => _onSaved(time: time),
-                      initialValue:
-                          TimeOfDay.fromDateTime(currentEvent.timestamp),
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Start:'),
+                        TimeFormField(
+                          onSaved: (TimeOfDay time) =>
+                              _onSaved(startTime: time),
+                          initialValue: TimeOfDay.fromDateTime(
+                              currentEvent.startTimestamp),
+                        ),
+                        Text('End:'),
+                        TimeFormField(
+                          onSaved: (TimeOfDay time) => _onSaved(endTime: time),
+                          initialValue:
+                              TimeOfDay.fromDateTime(currentEvent.endTimestamp),
+                        ),
+                      ],
                     )
                   : Text(
-                      TimeOfDay.fromDateTime(currentEvent.timestamp)
-                          .format(context),
+                      "${TimeOfDay.fromDateTime(currentEvent.startTimestamp).format(context)} - ${TimeOfDay.fromDateTime(currentEvent.endTimestamp).format(context)}",
                       style: TextStyle(fontSize: 16),
                     ),
             ),
-            EventRow(
+            LabeledRow(
               label: 'Details',
               body: isEdit
                   ? TextFormField(
@@ -103,7 +119,7 @@ class _EventPageState extends State<EventPage> {
                       ),
                     ),
             ),
-            EventRow(
+            LabeledRow(
               label: 'Attendees',
               body: isEdit
                   ? ContactSelectFormField(
@@ -111,10 +127,40 @@ class _EventPageState extends State<EventPage> {
                           _onSaved(memberRoles: members),
                       initialValue: currentEvent.memberRoles,
                     )
-                  : ListMemberAvatars(
-                      members: currentEvent.memberRoles,
-                      maxNum: 5,
-                      showNames: true,
+                  : Column(
+                      children: [
+                        ListMemberAvatars(
+                          hasMargin: true,
+                          members: currentEvent.memberRoles,
+                          maxNum: 5,
+                          showNames: true,
+                        ),
+                        RaisedButton(
+                          color: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5)),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.chat,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Text('Message',
+                                    style: TextStyle(color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                          onPressed: () => _messageMembersOfEvent(
+                              members: currentEvent.memberRoles),
+                        ),
+                      ],
                     ),
             ),
           ],
@@ -123,11 +169,22 @@ class _EventPageState extends State<EventPage> {
     );
   }
 
+  void _messageMembersOfEvent({List<MemberModel> members}) async {
+    ChatState chatState = Provider.of<ChatState>(context, listen: false);
+    UserState userState = Provider.of<UserState>(context, listen: false);
+    ChatModel createdChat = await chatState.createChat(
+      members: members,
+      currentUser: userState.currentUserModel,
+    );
+    return chatState.gotoChat(context, createdChat);
+  }
+
   void _onSaved({
     String notes,
     String title,
     List<MemberModel> memberRoles,
-    TimeOfDay time,
+    TimeOfDay startTime,
+    TimeOfDay endTime,
   }) {
     var calendarState = Provider.of<CalendarState>(context, listen: false);
     // updating the currently edited event ready to submit to the db
@@ -139,60 +196,23 @@ class _EventPageState extends State<EventPage> {
         title: title != null ? title : tempEvent.title,
         dateID: tempEvent.dateID,
         memberRoles: memberRoles != null ? memberRoles : tempEvent.memberRoles,
-        timestamp: time != null
-            ? new DateTime(
-                calendarState.currentSelectedDate.year,
-                calendarState.currentSelectedDate.month,
-                calendarState.currentSelectedDate.day,
-                time.hour,
-                time.minute,
-              )
-            : tempEvent.timestamp,
+        startTimestamp: startTime != null
+            ? _toDateTime(startTime, calendarState)
+            : tempEvent.startTimestamp,
+        endTimestamp: endTime != null
+            ? _toDateTime(endTime, calendarState)
+            : tempEvent.endTimestamp,
       ),
     );
   }
-}
 
-class EventRow extends StatelessWidget {
-  final String label;
-  final Widget body;
-
-  const EventRow({Key key, this.label, this.body}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          flex: 1,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 5),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: Theme.of(context).primaryColor.withOpacity(0.7),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 3,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 5),
-            decoration: BoxDecoration(
-              //   border: Border.all(
-              // color: Theme.of(context).primaryColor.withOpacity(0.5),
-              border: Border(
-                bottom: BorderSide(
-                  color: Theme.of(context).primaryColor.withOpacity(0.5),
-                ),
-              ),
-            ),
-            child: body,
-          ),
-        ),
-      ],
+  DateTime _toDateTime(TimeOfDay time, CalendarState calendarState) {
+    return new DateTime(
+      calendarState.currentSelectedDate.year,
+      calendarState.currentSelectedDate.month,
+      calendarState.currentSelectedDate.day,
+      time.hour,
+      time.minute,
     );
   }
 }

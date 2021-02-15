@@ -56,23 +56,16 @@ class _ContactSelectFormFieldState extends FormFieldState<List<MemberModel>> {
     );
   }
 
-  _addToMembers(UserModel contact) {
-    var member = MemberModel(
-      displayName: contact.displayName,
-      uid: contact.uid,
-      role: Role.member,
-    );
-
-    if (_contains(_members, member) == true) {
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text('Contact already invited')));
-    } else {
-      _members.add(member);
-      this.didChange(_members);
-    }
+  _addToMembers(List<MemberModel> membersToAdd) {
+    membersToAdd.forEach((memberToAdd) {
+      if (_listContains(_members, memberToAdd) == false) {
+        _members.add(memberToAdd);
+        this.didChange(_members);
+      }
+    });
   }
 
-  bool _contains(List<MemberModel> list, MemberModel member) {
+  bool _listContains(List<MemberModel> list, MemberModel member) {
     for (MemberModel m in list) {
       if (m.uid == member.uid) return true;
     }

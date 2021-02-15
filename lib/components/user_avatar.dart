@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import '../models/member_model.dart';
+import '../models/models.dart';
 
 class UserAvatar extends StatelessWidget {
-  final MemberModel user;
+  final MemberModel userMember;
+  final UserModel userModel;
 
-  const UserAvatar({Key key, this.user}) : super(key: key);
+  const UserAvatar({Key key, this.userMember, this.userModel})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +14,12 @@ class UserAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: 18,
       child: Text(
-        user.displayName[0],
+        userMember != null
+            ? userMember.displayName[0]
+            : userModel.displayName[0],
         style: TextStyle(color: Colors.white),
       ),
-      backgroundColor: Theme.of(context).accentColor,
+      backgroundColor: Theme.of(context).primaryColor,
     );
   }
 }

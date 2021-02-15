@@ -5,7 +5,8 @@ class EventModel {
   final String title;
   final String notes;
   final String dateID;
-  final DateTime timestamp;
+  final DateTime startTimestamp;
+  final DateTime endTimestamp;
   final List<MemberModel> memberRoles;
   final String eventID;
   // below is only used to get the event from the database
@@ -14,28 +15,37 @@ class EventModel {
   EventModel({
     this.notes,
     this.dateID,
-    // this.time,
     this.title,
     this.eventID,
     this.memberRoles,
-    this.timestamp,
+    this.startTimestamp,
+    this.endTimestamp,
   }) : members = memberRoles != null
             ? memberRoles.map((member) => member.uid).toList()
             : null;
 
   @override
   String toString() =>
-      'EventModel { notes: $notes, dateID: $dateID, title: $title, eventID: $eventID, members: $memberRoles, timestamp: $timestamp }';
+      'EventModel { notes: $notes, dateID: $dateID, title: $title, eventID: $eventID, members: $memberRoles, startTimestamp: $startTimestamp, endTimestamp: $endTimestamp }';
 
   factory EventModel.fromMap(Map<String, dynamic> data) {
-    Timestamp _timestampFromDB = data['timeStamp'] ?? Timestamp.now();
-    DateTime _timestamp = _timestampFromDB.toDate();
+    Timestamp _startTimestampFromDB = data['startTimeStamp'] ?? Timestamp.now();
+    Timestamp _endTimestampFromDB = data['endTimeStamp'] ?? Timestamp.now();
+    // convert the timestamp to datetime to make it easier to work with
+    DateTime _startTimestamp = _startTimestampFromDB.toDate();
+    DateTime _endTimestamp = _endTimestampFromDB.toDate();
+    // make sure there is a default member roles map to prevent 'called on null error'
     Map<String, dynamic> _tempMemberRoles = data['memberRoles'] ??
         {
           '': {'': ''}
         };
-    List<MemberModel> _memberRoles = _tempMemberRoles.keys.map((k) {
-      return MemberModel.fromMap(member: _tempMemberRoles[k], uid: k);
+    // convert member roles map to a list of memberModel's
+    // we gain auto completion from this now
+    List<MemberModel> _memberRoles = _tempMemberRoles.keys.map((key) {
+      return MemberModel.fromMap(
+        member: _tempMemberRoles[key],
+        uid: key,
+      );
     }).toList();
 
     return EventModel(
@@ -43,8 +53,8 @@ class EventModel {
       notes: data['notes'] ?? '',
       dateID: data['dateID'] ?? '',
       memberRoles: _memberRoles,
-      // time: data['time'] ?? '',
-      timestamp: _timestamp,
+      startTimestamp: _startTimestamp,
+      endTimestamp: _endTimestamp,
       eventID: data['eventID'] ?? '',
     );
   }
@@ -62,11 +72,11 @@ class EventModel {
       'title': title,
       'members': members,
       'dateID': dateID,
-      // 'time': time,
       'eventID': eventID,
       'notes': notes,
       'memberRoles': mapMemberRoles,
-      'timeStamp': timestamp,
+      'startTimeStamp': startTimestamp,
+      'endTimeStamp': endTimestamp,
     };
   }
 }

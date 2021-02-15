@@ -50,14 +50,18 @@ class ChatMessage extends StatelessWidget {
                     topRight: isSentByUser ? Radius.zero : Radius.circular(20),
                   ),
                   gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: isSentByUser
-                          ? [
-                              Colors.cyan,
-                              Colors.blue,
-                            ]
-                          : [Colors.blueGrey[100], Colors.blueGrey[100]]),
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: isSentByUser
+                        ? [
+                            Theme.of(context).primaryColor.withOpacity(0.8),
+                            Theme.of(context).primaryColor,
+                          ]
+                        : [
+                            Theme.of(context).accentColor.withOpacity(0.8),
+                            Theme.of(context).accentColor,
+                          ],
+                  ),
                 ),
                 child: Text(
                   text,

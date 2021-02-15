@@ -131,7 +131,7 @@ class _EventsState extends State<Events> {
         eventID: eventID,
         title: '',
         notes: '',
-        timestamp: DateTime.now(),
+        startTimestamp: DateTime.now(),
         memberRoles: [currentUserAsMember],
       );
     }
