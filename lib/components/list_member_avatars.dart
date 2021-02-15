@@ -10,10 +10,12 @@ class ListMemberAvatars extends StatelessWidget {
   final int maxNum;
   final bool showNames;
   final bool hasMargin;
+  final bool isLight;
 
   const ListMemberAvatars(
       {Key key,
       this.members,
+      this.isLight = false,
       this.maxNum,
       this.hasMargin = false,
       this.showNames = false})
@@ -44,7 +46,7 @@ class ListMemberAvatars extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              UserAvatar(userMember: member),
+              UserAvatar(userMember: member, isLight: isLight),
               showNames == true
                   ? Text(
                       member.displayName,
@@ -52,6 +54,9 @@ class ListMemberAvatars extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
+                        color: isLight
+                            ? Colors.white
+                            : Theme.of(context).primaryColor,
                       ),
                     )
                   : Container(),

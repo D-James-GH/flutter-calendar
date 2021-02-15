@@ -54,8 +54,6 @@ class AllChatScreen extends StatelessWidget {
       body: StreamBuilder<List<ChatModel>>(
         stream: _chatDB.chatStream(),
         builder: (context, snapshot) {
-          print(snapshot);
-
           if (snapshot.hasData) {
             List<ChatModel> chats = snapshot.data;
             return ListView.builder(

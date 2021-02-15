@@ -6,16 +6,21 @@ import 'package:flutter_calendar/models/models.dart';
 class EventTile extends StatelessWidget {
   final Function gotoEvent;
   final EventModel event;
+  final bool isLight;
 
-  const EventTile({Key key, this.gotoEvent, this.event}) : super(key: key);
+  const EventTile({Key key, this.isLight = false, this.gotoEvent, this.event})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final _titleStyle = TextStyle(
       fontSize: 16,
       fontWeight: FontWeight.bold,
+      color: isLight ? Colors.white : Theme.of(context).primaryColor,
     );
-    final _textStyle = TextStyle(fontSize: 13);
+    final _textStyle = TextStyle(
+        fontSize: 13,
+        color: isLight ? Colors.white : Theme.of(context).primaryColor);
     return InkWell(
       onTap: gotoEvent,
       child: SizedBox(
@@ -52,7 +57,9 @@ class EventTile extends StatelessWidget {
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
-                        color: Theme.of(context).primaryColor.withOpacity(0.7),
+                        color: isLight
+                            ? Colors.white.withOpacity(0.4)
+                            : Theme.of(context).primaryColor.withOpacity(0.7),
                       ),
                     ),
                   ),
@@ -83,6 +90,7 @@ class EventTile extends StatelessWidget {
                         width: 75,
                         height: double.infinity,
                         child: ListMemberAvatars(
+                          isLight: isLight,
                           members: event.memberRoles,
                           maxNum: 2,
                         ),

@@ -26,12 +26,44 @@ class CalendarDB {
     });
   }
 
+  Future<List<EventModel>> getEventsWithContact(String contactUID) async {
+    User user = _auth.currentUser;
+    if (user != null) {
+      CollectionReference ref = _db.collection('events');
+      var result = await ref
+          .where('memberUIDs.' + user.uid, isEqualTo: true)
+          .where('memberUIDs.' + contactUID, isEqualTo: true)
+          .where('isPast', isEqualTo: false)
+          .get();
+      if (result.docs.length != null) {
+        WriteBatch batch = _db.batch();
+        var eventModels = result.docs.map((event) {
+          print(event.data());
+          EventModel eventModel = EventModel.fromMap(event.data());
+          // below prevents the event coming up in future queries.
+          // It is not a frequently used feature as this query is only used once on a contacts page
+          if (DateTime.now().isAfter(eventModel.endTimestamp)) {
+            print('in the past');
+            DocumentReference docRef = ref.doc(event.id);
+            batch.set(docRef, {'isPast': true}, SetOptions(merge: true));
+          }
+          return eventModel;
+        }).toList();
+        batch.commit().then((_) => print('changed isPast'));
+        print(eventModels);
+        return eventModels;
+      }
+      return [];
+    }
+    return [];
+  }
+
   Future<List<EventModel>> getEvents(String dateID) async {
     User user = _auth.currentUser;
     if (user != null) {
       var result = await _db
           .collection('events')
-          .where('members', arrayContains: user.uid)
+          .where('memberUIDs.' + user.uid, isEqualTo: true)
           .where('dateID', isEqualTo: dateID)
           .get();
       List<EventModel> events = result.docs.length != 0

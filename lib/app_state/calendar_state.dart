@@ -5,7 +5,7 @@ import 'package:flutter_calendar/services/service_locator.dart';
 import 'package:intl/intl.dart';
 
 class CalendarState extends ChangeNotifier {
-  CalendarDB _userData = locator<CalendarDB>();
+  CalendarDB _calendarDB = locator<CalendarDB>();
   Map<String, List<EventModel>> _events = {};
   DateTime _currentDate = DateTime.now();
   EventModel editFormEvent = EventModel();
@@ -46,7 +46,7 @@ class CalendarState extends ChangeNotifier {
 
   // event state ======================================
   Future<void> fetchEventFromDB(String dateID) async {
-    final calEvents = await _userData.getEvents(dateID);
+    final calEvents = await _calendarDB.getEvents(dateID);
     //  store events grouped by day for easier display
     _events[dateID] = calEvents; // possibly ?? []
     if (_events.length >= 40) {
@@ -54,9 +54,15 @@ class CalendarState extends ChangeNotifier {
     }
   }
 
+  Future<List<EventModel>> fetchEventsWithContact(String contactUID) async {
+    List<EventModel> events =
+        await _calendarDB.getEventsWithContact(contactUID);
+    return events;
+  }
+
   Future<void> deleteEvent({String eventID, String dateID}) async {
     // TODO: implement delete event in app
-    await _userData.deleteEvent(eventID);
+    await _calendarDB.deleteEvent(eventID);
     var _currentEvents = _events;
     _currentEvents[dateID].removeWhere((e) => e.eventID == eventID);
     notifyListeners();
@@ -65,7 +71,7 @@ class CalendarState extends ChangeNotifier {
   Future<void> saveEventToDB(EventModel event) async {
     String dateID = event.dateID;
     // create event in db
-    await _userData.createEvent(event);
+    await _calendarDB.createEvent(event);
     var _currentEvents = _events;
     // If creating an event for the first time indexOfEvent will return -1
     var indexOfEvent =

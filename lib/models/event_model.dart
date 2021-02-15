@@ -9,10 +9,12 @@ class EventModel {
   final DateTime endTimestamp;
   final List<MemberModel> memberRoles;
   final String eventID;
+  final bool isPast;
   // below is only used to get the event from the database
-  final List<String> members;
+  final Map<String, dynamic> memberUIDs;
 
   EventModel({
+    this.isPast = false,
     this.notes,
     this.dateID,
     this.title,
@@ -20,13 +22,13 @@ class EventModel {
     this.memberRoles,
     this.startTimestamp,
     this.endTimestamp,
-  }) : members = memberRoles != null
-            ? memberRoles.map((member) => member.uid).toList()
+  }) : memberUIDs = memberRoles != null
+            ? {for (MemberModel member in memberRoles) member.uid: true}
             : null;
 
   @override
   String toString() =>
-      'EventModel { notes: $notes, dateID: $dateID, title: $title, eventID: $eventID, members: $memberRoles, startTimestamp: $startTimestamp, endTimestamp: $endTimestamp }';
+      'EventModel { notes: $notes, dateID: $dateID, memberUIDs: $memberUIDs,title: $title, eventID: $eventID, members: $memberRoles, startTimestamp: $startTimestamp, endTimestamp: $endTimestamp }';
 
   factory EventModel.fromMap(Map<String, dynamic> data) {
     Timestamp _startTimestampFromDB = data['startTimeStamp'] ?? Timestamp.now();
@@ -52,6 +54,7 @@ class EventModel {
       title: data['title'] ?? '',
       notes: data['notes'] ?? '',
       dateID: data['dateID'] ?? '',
+      isPast: data['isPast'] ?? false,
       memberRoles: _memberRoles,
       startTimestamp: _startTimestamp,
       endTimestamp: _endTimestamp,
@@ -70,9 +73,10 @@ class EventModel {
     });
     return {
       'title': title,
-      'members': members,
+      'memberUIDs': memberUIDs,
       'dateID': dateID,
       'eventID': eventID,
+      'isPast': isPast,
       'notes': notes,
       'memberRoles': mapMemberRoles,
       'startTimeStamp': startTimestamp,

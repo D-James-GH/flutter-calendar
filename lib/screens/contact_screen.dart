@@ -1,8 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/app_state/calendar_state.dart';
+import 'package:flutter_calendar/components/event_tile.dart';
 import 'package:flutter_calendar/components/labeled_row.dart';
 import 'package:flutter_calendar/components/user_avatar.dart';
 import 'package:flutter_calendar/models/models.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class ContactScreen extends StatefulWidget {
   static const routeName = '/contactScreen';
@@ -18,12 +23,26 @@ class ContactScreen extends StatefulWidget {
 
 class _ContactScreenState extends State<ContactScreen> {
   bool _notificationOn = true;
+  List<EventModel> _events = [];
+  @override
+  void initState() {
+    super.initState();
+    CalendarState calendarState =
+        Provider.of<CalendarState>(context, listen: false);
+    calendarState
+        .fetchEventsWithContact(widget.contact.uid)
+        .then((List<EventModel> value) {
+      setState(() {
+        _events = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Contact name'),
+        title: Text(widget.contact.displayName),
       ),
       body: Column(
         children: [
@@ -77,18 +96,40 @@ class _ContactScreenState extends State<ContactScreen> {
                   topRight: Radius.circular(25),
                 ),
               ),
-              child: Column(
-                children: [
-                  Text(
-                    'Events with ${widget.contact.displayName}',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  Divider(
-                    indent: 40,
-                    endIndent: 40,
-                    color: Colors.white,
-                  ),
-                ],
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Events with ${widget.contact.displayName}',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
+                    Divider(
+                      color: Colors.white,
+                      thickness: 2,
+                    ),
+                    _events.isNotEmpty
+                        ? Expanded(
+                            child: ListView.builder(
+                              itemCount: _events.length,
+                              itemBuilder: (BuildContext context, int i) {
+                                return _events[i] != null
+                                    ? EventTile(
+                                        event: _events[i],
+                                        isLight: true,
+                                        gotoEvent: null,
+                                      )
+                                    : Container();
+                              },
+                            ),
+                          )
+                        : Container(),
+                  ],
+                ),
               ),
             ),
           ),

@@ -4,8 +4,10 @@ import '../models/models.dart';
 class UserAvatar extends StatelessWidget {
   final MemberModel userMember;
   final UserModel userModel;
+  final isLight;
 
-  const UserAvatar({Key key, this.userMember, this.userModel})
+  const UserAvatar(
+      {Key key, this.userMember, this.isLight = false, this.userModel})
       : super(key: key);
 
   @override
@@ -17,9 +19,10 @@ class UserAvatar extends StatelessWidget {
         userMember != null
             ? userMember.displayName[0]
             : userModel.displayName[0],
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(
+            color: isLight ? Theme.of(context).primaryColor : Colors.white),
       ),
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: isLight ? Colors.white : Theme.of(context).primaryColor,
     );
   }
 }
