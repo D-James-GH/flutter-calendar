@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_calendar/app_state/calendar_state.dart';
+import 'package:flutter_calendar/app_state/chat_state.dart';
 import 'package:flutter_calendar/components/contact_list_tile.dart';
 import 'package:flutter_calendar/navigation/navigation_keys.dart';
+import 'package:flutter_calendar/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 // custom lib
@@ -17,7 +20,7 @@ class ContactsScreenArguments {
   ContactsScreenArguments(this.contact);
 }
 
-enum OptionsMenu { logout }
+enum OptionsMenu { logout, profile }
 
 class ContactsScreen extends StatefulWidget {
   @override
@@ -59,6 +62,10 @@ class _ContactsScreenState extends State<ContactsScreen> {
               PopupMenuItem(
                 value: OptionsMenu.logout,
                 child: Text('Logout'),
+              ),
+              PopupMenuItem(
+                value: OptionsMenu.profile,
+                child: Text('My Profile'),
               ),
             ],
           )
@@ -113,13 +120,25 @@ class _ContactsScreenState extends State<ContactsScreen> {
       case OptionsMenu.logout:
         logout(context);
         break;
+      case OptionsMenu.profile:
+        _gotoProfile();
+        break;
       default:
         return null;
     }
   }
 
+  void _gotoProfile() {
+    NavigationKeys.contactNavState.currentState.push(MaterialPageRoute(
+      builder: (BuildContext context) => ProfileScreen(),
+    ));
+  }
+
   void logout(BuildContext context) async {
     await auth.signOut();
+    // userState.dispose();
+    // Provider.of<CalendarState>(context, listen: false).dispose();
+    // Provider.of<ChatState>(context, listen: false).dispose();
     Navigator.of(context, rootNavigator: true)
         .pushNamedAndRemoveUntil('/', (route) => false);
   }
