@@ -8,6 +8,7 @@ import '../models/models.dart';
 class ChatDB {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   Stream<List<MessageModel>> messageStream(String chatID) {
     return _auth.authStateChanges().switchMap((user) {
       if (user != null) {
@@ -127,11 +128,8 @@ class ChatDB {
   }
 
   Future<String> createChat(ChatModel chat) {
-    print('creating chat');
-    print(chat.memberUIDs);
     var chatID = chat.chatID == '' ? null : chat.chatID;
     DocumentReference docRef = _db.collection('chats').doc(chatID);
-    print(chat.toMap());
     return docRef
         .set(chat.toMap(), SetOptions(merge: true))
         .then((val) => docRef.id);

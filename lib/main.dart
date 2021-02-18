@@ -28,7 +28,8 @@ class MyCalendarApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<CalendarState>(
             create: (context) => CalendarState()),
-        ChangeNotifierProvider<UserState>(create: (context) => UserState()),
+        ChangeNotifierProvider<UserState>(
+            create: (context) => locator<UserState>()),
         ChangeNotifierProvider<ChatState>(create: (context) => ChatState()),
         StreamProvider<User>.value(value: AuthService().user),
       ],

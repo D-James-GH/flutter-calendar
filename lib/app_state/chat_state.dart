@@ -2,11 +2,9 @@
 // at the moment chats are working purely with streams so no state is needed.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/app_state/user_state.dart';
 import 'package:flutter_calendar/models/models.dart';
 import 'package:flutter_calendar/screens/screens.dart';
 import 'package:flutter_calendar/services/services.dart';
-import 'package:provider/provider.dart';
 
 class ChatState extends ChangeNotifier {
   // this file is to have all interaction with the db in one place
@@ -30,7 +28,7 @@ class ChatState extends ChangeNotifier {
       isVisibleTo[member.uid] = true;
       memberRoles.add(MemberModel(
         role: Role.member,
-        displayName: member.displayName,
+        nickname: member.nickname,
         uid: member.uid,
       ));
     });
@@ -38,7 +36,7 @@ class ChatState extends ChangeNotifier {
     memberRoles.add(
       MemberModel(
           uid: currentUser.uid,
-          displayName: currentUser.displayName,
+          nickname: currentUser.displayName,
           role: Role.admin),
     );
     isVisibleTo[currentUser.uid] = true;

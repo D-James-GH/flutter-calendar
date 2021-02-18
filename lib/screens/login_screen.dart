@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/app_state/user_state.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 // custom lib
 import '../navigation/home_navigator.dart';
@@ -27,9 +29,7 @@ class _LoginState extends State<Login> {
     auth.getCurrentUser.then(
       (user) {
         if (user != null) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => Home()),
-          );
+          navigateToHome();
         }
       },
     );
@@ -88,6 +88,7 @@ class _LoginState extends State<Login> {
                     textAlign: TextAlign.center,
                   ),
                   LoginIconButton(
+                    navigateToHome: navigateToHome,
                     icon: FontAwesomeIcons.google,
                     loginMethod: auth.googleSignIn,
                   ),
@@ -169,9 +170,7 @@ class _LoginState extends State<Login> {
           onPressed: () async {
             var user = await auth.userSignIn(_email, _password);
             if (user != null) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => Home()),
-              );
+              navigateToHome();
             }
           },
         );
@@ -186,9 +185,7 @@ class _LoginState extends State<Login> {
               var user =
                   await auth.userRegister(_email, _password, _displayName);
               if (user != null) {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => Home()),
-                );
+                navigateToHome();
               }
             } else {
               print('error');
@@ -222,6 +219,14 @@ class _LoginState extends State<Login> {
       return [];
   }
 
+  void navigateToHome() async {
+    print('nevigatin....');
+    await Provider.of<UserState>(context, listen: false).fetchUserFromDB();
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => Home()),
+    );
+  }
+
   @override
   void dispose() {
     // Clean up the controller when the widget is removed from the
@@ -234,8 +239,10 @@ class _LoginState extends State<Login> {
 class LoginIconButton extends StatelessWidget {
   final IconData icon;
   final Function loginMethod;
+  final Function navigateToHome;
 
-  const LoginIconButton({Key key, this.icon, this.loginMethod})
+  const LoginIconButton(
+      {Key key, this.icon, this.loginMethod, @required this.navigateToHome})
       : super(key: key);
 
   @override
@@ -253,9 +260,7 @@ class LoginIconButton extends StatelessWidget {
           onPressed: () async {
             var user = await loginMethod();
             if (user != null) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => Home()),
-              );
+              navigateToHome();
             }
           }),
     );

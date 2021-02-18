@@ -50,7 +50,6 @@ class CalendarDB {
           return eventModel;
         }).toList();
         batch.commit().then((_) => print('changed isPast'));
-        print(eventModels);
         return eventModels;
       }
       return [];

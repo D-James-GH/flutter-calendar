@@ -1,6 +1,8 @@
 # Currently under development
 - Re-doing the design to match the adobe xd 
-- add 'events with' on contact page
+- update changed display name all over the app
+- create a sub collection for contacts
+- reset all state on logout
 
 ## Small Todos
 
@@ -9,7 +11,6 @@
 ## Features to impliment
 
 - calendar
-    - add 'events with' on contact page
     - Custom colors for events
     - location of the event
     - multi-day events

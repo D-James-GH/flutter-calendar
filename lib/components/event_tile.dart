@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_calendar/components/list_member_avatars.dart';
 import 'package:flutter_calendar/models/models.dart';
@@ -7,8 +8,13 @@ class EventTile extends StatelessWidget {
   final Function gotoEvent;
   final EventModel event;
   final bool isLight;
-
-  const EventTile({Key key, this.isLight = false, this.gotoEvent, this.event})
+  final bool showDate;
+  const EventTile(
+      {Key key,
+      this.isLight = false,
+      this.showDate = false,
+      this.gotoEvent,
+      this.event})
       : super(key: key);
 
   @override
@@ -38,12 +44,19 @@ class EventTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    showDate
+                        ? Text(DateFormat.yMMMd().format(event.startTimestamp),
+                            style: TextStyle(color: Colors.white))
+                        : Container(),
                     Text(
                       TimeOfDay.fromDateTime(event.startTimestamp)
                           .format(context),
                       style: _titleStyle,
                     ),
-                    Text('3h', style: _textStyle),
+                    Text(
+                        _eventTimeDuration(
+                            event.startTimestamp, event.endTimestamp),
+                        style: _textStyle),
                   ],
                 ),
               ),
@@ -104,5 +117,16 @@ class EventTile extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _eventTimeDuration(DateTime start, DateTime end) {
+    Duration dur = end.difference(start);
+    if (dur.inHours >= 24) {
+      return dur.inDays.toString() + " days";
+    }
+    if (dur.inHours <= 1) {
+      return dur.inMinutes.toString() + " mins";
+    }
+    return dur.inHours.toString() + " h";
   }
 }

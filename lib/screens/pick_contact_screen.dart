@@ -20,7 +20,6 @@ class PickContactScreen extends StatefulWidget {
 }
 
 class _PickContactScreenState extends State<PickContactScreen> {
-  ChatDB chatDB = locator<ChatDB>();
   Map<String, UserModel> _selectedContacts = {};
   TextEditingController _groupNameController = TextEditingController();
 
@@ -71,8 +70,8 @@ class _PickContactScreenState extends State<PickContactScreen> {
   }
 
   List<Widget> _buildAllContacts() {
-    List<UserModel> contacts = Provider.of<UserState>(context).contacts;
-    return contacts.map((contact) {
+    Map<String, UserModel> contacts = Provider.of<UserState>(context).contacts;
+    return contacts.values.map((contact) {
       return ContactListTile(
         contact: contact,
         onTapFunc: () {
@@ -163,7 +162,7 @@ class _PickContactScreenState extends State<PickContactScreen> {
     List<MemberModel> contactsList = _selectedContacts.entries
         .map((e) => MemberModel(
               uid: e.value.uid,
-              displayName: e.value.displayName,
+              nickname: e.value.displayName,
               role: Role.member,
             ))
         .toList();

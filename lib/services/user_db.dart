@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_calendar/models/contact_model.dart';
 import 'package:flutter_calendar/models/models.dart';
 
 class UserDB {
@@ -8,6 +9,7 @@ class UserDB {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<List<UserModel>> getUserByEmail(String email) {
+    email = email.toLowerCase();
     return userRef.where('email', isEqualTo: email).get().then((value) {
       if (value.docs.isNotEmpty) {
         return value.docs.map((e) => UserModel.fromMap(e.data())).toList();
@@ -19,23 +21,55 @@ class UserDB {
   }
 
   Future<UserModel> get currentUserFromDB {
-    return getUserFromDB(_auth.currentUser.uid);
+    return getUser(_auth.currentUser.uid);
   }
 
-  Future<UserModel> getUserFromDB(String uid) {
+  Future<UserModel> getUser(String uid) {
     return userRef.doc(uid).get().then((doc) => UserModel.fromMap(doc.data()));
   }
 
-  Future<UserModel> createContact(String email) async {
-    List<UserModel> userContact = await getUserByEmail(email);
+  void updateNickname(ContactModel contact) {
+    userRef
+        .doc(_auth.currentUser.uid)
+        .collection('contacts')
+        .doc('contacts')
+        .set(contact.toMap(), SetOptions(merge: true));
+  }
+
+  Future<Map<String, ContactModel>> getContacts() {
+    return userRef
+        .doc(_auth.currentUser.uid)
+        .collection('contacts')
+        .doc('contacts')
+        .get()
+        .then((contacts) {
+      Map<String, ContactModel> output = {};
+      contacts.data().forEach((String key, value) {
+        output[key] = ContactModel(userID: key, nickname: value['nickname']);
+      });
+      return output;
+    });
+  }
+
+  void createContact(ContactModel contact) {
+    // contacts are stored in a sub collection so that they are not sent when others are
+    // receiving user information
+
     User loggedInUser = _auth.currentUser;
-    if (userContact != null && loggedInUser != null) {
-      userRef.doc(loggedInUser.uid).set({
-        'contacts': FieldValue.arrayUnion([userContact[0].uid])
-      }, SetOptions(merge: true));
-      return userContact[0];
-    } else {
-      return null;
-    }
+    userRef
+        .doc(loggedInUser.uid)
+        .collection('contacts')
+        .doc('contacts')
+        .set(contact.toMap(), SetOptions(merge: true));
+
+    // List<UserModel> userContact = await getUserByEmail(email);
+    // if (userContact != null && loggedInUser != null) {
+    //   userRef.doc(loggedInUser.uid).set({
+    //     'contacts': FieldValue.arrayUnion([userContact[0].uid])
+    //   }, SetOptions(merge: true));
+    //   return userContact[0];
+    // } else {
+    //   return null;
+    // }
   }
 }

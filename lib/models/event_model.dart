@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_calendar/app_state/user_state.dart';
+import 'package:flutter_calendar/models/contact_model.dart';
+import 'package:flutter_calendar/services/service_locator.dart';
 import 'member_model.dart';
 
 class EventModel {
@@ -41,9 +44,13 @@ class EventModel {
         {
           '': {'': ''}
         };
+    UserState userState = locator<UserState>();
+    Map<String, ContactModel> userContacts = userState.customContactData;
     // convert member roles map to a list of memberModel's
     // we gain auto completion from this now
     List<MemberModel> _memberRoles = _tempMemberRoles.keys.map((key) {
+      // check if the user has created a nickname for this member
+
       return MemberModel.fromMap(
         member: _tempMemberRoles[key],
         uid: key,

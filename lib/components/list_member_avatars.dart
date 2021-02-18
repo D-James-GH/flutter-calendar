@@ -36,7 +36,7 @@ class ListMemberAvatars extends StatelessWidget {
   List<Widget> _buildMemberAvatars(BuildContext context) {
     UserState userState = Provider.of<UserState>(context);
     List<Widget> memberAvatars = members.map((member) {
-      if (member.uid != userState.currentUserModel.uid) {
+      if (member.uid != userState.currentUser.uid) {
         return Container(
           width: 36,
           margin: hasMargin
@@ -49,7 +49,7 @@ class ListMemberAvatars extends StatelessWidget {
               UserAvatar(userMember: member, isLight: isLight),
               showNames == true
                   ? Text(
-                      member.displayName,
+                      member.nickname,
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.center,
                       style: TextStyle(

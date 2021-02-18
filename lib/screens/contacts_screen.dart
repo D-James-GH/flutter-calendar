@@ -19,25 +19,28 @@ class ContactsScreenArguments {
 
 enum OptionsMenu { logout }
 
-class Contacts extends StatefulWidget {
+class ContactsScreen extends StatefulWidget {
   @override
-  _ContactsState createState() => _ContactsState();
+  _ContactsScreenState createState() => _ContactsScreenState();
 }
 
-class _ContactsState extends State<Contacts> {
+class _ContactsScreenState extends State<ContactsScreen> {
   final AuthService auth = AuthService();
+  UserState userState;
+  Map<String, UserModel> _contacts;
+  UserModel currentUser;
 
   @override
   void initState() {
     super.initState();
+    userState = Provider.of<UserState>(context, listen: false);
+    currentUser = userState.currentUser;
+    userState.fetchContactsFromDB();
   }
 
   @override
   Widget build(BuildContext context) {
-    User user = Provider.of<User>(context);
-    UserState userState = Provider.of<UserState>(context);
-    List<UserModel> contacts = userState.contacts;
-
+    _contacts = Provider.of<UserState>(context).contacts;
     return Scaffold(
       appBar: AppBar(
         leading: Container(
@@ -47,7 +50,7 @@ class _ContactsState extends State<Contacts> {
             backgroundColor: Colors.pink,
           ),
         ),
-        title: Text("${user.displayName}'s Contacts"),
+        title: Text("${currentUser.displayName}'s Contacts"),
         actions: <Widget>[
           PopupMenuButton<OptionsMenu>(
             onSelected: (option) => handlePopupMenu(option, context),
@@ -70,28 +73,39 @@ class _ContactsState extends State<Contacts> {
           }
         },
         behavior: HitTestBehavior.translucent,
-        child: Column(
-          children: [
-            AddContactForm(),
-            ..._buildAllContacts(contacts),
-          ],
+        child: Consumer<UserState>(
+          builder: (BuildContext context, state, child) {
+            return Column(
+              children: [
+                child,
+                ...state.contacts.values.map((contact) {
+                  return ContactListTile(
+                    contact: contact,
+                    onTapFunc: () => _gotoContactPage(contact),
+
+                    //     () => contactsNavState.currentState.pushNamed(
+                    // ContactScreen.routeName,
+                    // arguments: ContactsScreenArguments(contact),
+                  );
+                }).toList(),
+              ],
+            );
+          },
+          child: AddContactForm(),
         ),
       ),
     );
   }
 
-  List<Widget> _buildAllContacts(List<UserModel> contacts) {
-    // Todo: clicking on the contact needs to go to the contact screen
+  void _gotoContactPage(contact) {
     GlobalKey<NavigatorState> contactsNavState = NavigationKeys.contactNavState;
-    return contacts.map((contact) {
-      return ContactListTile(
-        contact: contact,
-        onTapFunc: () => contactsNavState.currentState.pushNamed(
-          ContactScreen.routeName,
-          arguments: ContactsScreenArguments(contact),
+    contactsNavState.currentState.push(
+      MaterialPageRoute(
+        builder: (context) => ContactScreen(
+          contact: contact,
         ),
-      );
-    }).toList();
+      ),
+    );
   }
 
   void handlePopupMenu(OptionsMenu option, BuildContext context) {

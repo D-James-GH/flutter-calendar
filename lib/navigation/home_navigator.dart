@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/app_state/user_state.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 // custom lib
 
@@ -42,7 +46,13 @@ class HomeState extends State<Home> {
       child: Scaffold(
         body: IndexedStack(
           index: _currentTabIndex,
-          children: _buildTabs(),
+          children: [
+            CalendarNavigator(),
+            ChatNavigator(isVisible: _currentTabIndex == 1),
+            ContactsNavigator(
+              isVisible: _currentTabIndex == 2,
+            ),
+          ],
         ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentTabIndex,
@@ -78,14 +88,6 @@ class HomeState extends State<Home> {
         ),
         label: 'Contacts',
       ),
-    ];
-  }
-
-  List<Widget> _buildTabs() {
-    return [
-      CalendarNavigator(),
-      ChatNavigator(),
-      ContactNavigator(),
     ];
   }
 

@@ -1,33 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/screens/contact_screen.dart';
 
 // custom lib
 import '../screens/something_went_wrong.dart';
 import '../screens/contacts_screen.dart';
 import 'navigation_keys.dart';
 
-class ContactNavigator extends StatelessWidget {
+class ContactsNavigator extends StatelessWidget {
+  final bool isVisible;
+
+  const ContactsNavigator({Key key, this.isVisible}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Navigator(
-      key: NavigationKeys.contactNavState,
-      onGenerateRoute: (RouteSettings settings) {
-        return MaterialPageRoute(
-            settings: settings,
-            builder: (BuildContext context) {
-              switch (settings.name) {
-                case '/':
-                  return Contacts();
-                case ContactScreen.routeName:
-                  ContactsScreenArguments args = settings.arguments;
-                  return ContactScreen(
-                    contact: args.contact,
-                  );
-                default:
-                  return SomethingWentWrong();
-              }
-            });
-      },
-    );
+    return isVisible
+        ? Navigator(
+            key: NavigationKeys.contactNavState,
+            onGenerateRoute: (RouteSettings settings) {
+              return MaterialPageRoute(
+                  settings: settings,
+                  builder: (BuildContext context) {
+                    switch (settings.name) {
+                      case '/':
+                        return ContactsScreen();
+                      // case '/contactScreen':
+                      //   ContactsScreenArguments args = settings.arguments;
+                      //   return ContactScreen(
+                      //     contact: args.contact,
+                      //   );
+                      default:
+                        return SomethingWentWrong();
+                    }
+                  });
+            },
+          )
+        : Container();
   }
 }

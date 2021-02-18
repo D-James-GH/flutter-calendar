@@ -34,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    user = Provider.of<UserState>(context, listen: false).currentUserModel;
+    user = Provider.of<UserState>(context, listen: false).currentUser;
     _groupNameController.text = widget.chat.groupName;
     _groupName = widget.chat.groupName;
   }

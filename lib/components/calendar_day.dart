@@ -28,6 +28,7 @@ class _CalendarDayState extends State<CalendarDay> {
     String dateID;
     CalendarState calendarState = Provider.of<CalendarState>(context);
     dateID = calendarState.calcDateID(widget.dateObject);
+    // Todo: this should be in initstate
     calendarState.fetchEventFromDB(dateID);
     TextStyle dateNumberStyle;
     if (calendarState.currentSelectedDate == widget.dateObject) {

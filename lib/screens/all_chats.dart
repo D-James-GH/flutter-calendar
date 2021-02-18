@@ -40,7 +40,7 @@ class AllChatScreen extends StatelessWidget {
                       ChatModel createdChat = await chatState.createChat(
                         members: members,
                         groupName: groupName,
-                        currentUser: userState.currentUserModel,
+                        currentUser: userState.currentUser,
                       );
                       return chatState.gotoChat(context, createdChat);
                     },
@@ -65,8 +65,7 @@ class AllChatScreen extends StatelessWidget {
                   // otherwise display picture should be the group symbol
                   if (chats[i].memberRoles.length == 2) {
                     MemberModel contact = chats[i].memberRoles.firstWhere(
-                        (element) =>
-                            element.uid != userState.currentUserModel.uid);
+                        (element) => element.uid != userState.currentUser.uid);
                     leadingIcon = UserAvatar(
                       userMember: contact,
                     );

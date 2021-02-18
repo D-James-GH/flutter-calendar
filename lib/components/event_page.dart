@@ -174,7 +174,7 @@ class _EventPageState extends State<EventPage> {
     UserState userState = Provider.of<UserState>(context, listen: false);
     ChatModel createdChat = await chatState.createChat(
       members: members,
-      currentUser: userState.currentUserModel,
+      currentUser: userState.currentUser,
     );
     return chatState.gotoChat(context, createdChat);
   }

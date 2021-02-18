@@ -1,5 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/app_state/user_state.dart';
+import 'package:flutter_calendar/models/models.dart';
 import 'package:provider/provider.dart';
 
 class ChatMessage extends StatelessWidget {
@@ -15,7 +16,7 @@ class ChatMessage extends StatelessWidget {
       this.isFirstMessageFromUser});
 
   Widget build(BuildContext context) {
-    final User user = Provider.of<User>(context);
+    UserModel user = Provider.of<UserState>(context).currentUser;
 
     return Container(
       margin: EdgeInsets.symmetric(vertical: 4),
@@ -34,6 +35,7 @@ class ChatMessage extends StatelessWidget {
                           style: TextStyle(fontSize: 12, height: 0.9)),
                     )
                   : Container(
+                      // Todo: check user id with the chats to see if any nick names have been created
                       child: null,
                     ),
               Container(

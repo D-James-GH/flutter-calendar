@@ -122,9 +122,9 @@ class _EventsState extends State<Events> {
           calendarState.calcDateID(calendarState.currentSelectedDate);
       String eventID = Uuid().v4();
       var currentUserAsMember = MemberModel(
-        uid: user.currentUserModel.uid,
+        uid: user.currentUser.uid,
         role: Role.admin,
-        displayName: user.currentUserModel.displayName,
+        nickname: user.currentUser.displayName,
       );
       event = EventModel(
         dateID: dateID,
@@ -145,14 +145,17 @@ class _EventsState extends State<Events> {
         gotoListView: _gotoListView,
       );
     });
-
-    _pageController.animateToPage(1,
-        duration: Duration(milliseconds: 300), curve: Curves.easeInOutSine);
+    if (_pageController.hasClients) {
+      _pageController.animateToPage(1,
+          duration: Duration(milliseconds: 300), curve: Curves.easeInOutSine);
+    }
   }
 
   void _gotoListView() {
-    _pageController.animateToPage(0,
-        duration: Duration(milliseconds: 300), curve: Curves.easeInOutSine);
+    if (_pageController.hasClients) {
+      _pageController.animateToPage(0,
+          duration: Duration(milliseconds: 300), curve: Curves.easeInOutSine);
+    }
   }
 
   void _pageChanged(int index) {

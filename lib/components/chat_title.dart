@@ -14,12 +14,12 @@ class ChatTitle extends StatelessWidget {
     List membersToDisplay = [];
     members.forEach((member) {
       if (members.length > 1 &&
-          _userState.currentUserModel.displayName != member.displayName) {
+          _userState.currentUser.displayName != member.nickname) {
         // if the chat is with other people then do not show the current user
-        membersToDisplay.add(member.displayName);
+        membersToDisplay.add(member.nickname);
       } else if (members.length == 1) {
         // show the current user if the chat is with them self
-        membersToDisplay.add(member.displayName);
+        membersToDisplay.add(member.nickname);
       }
     });
     return Row(
