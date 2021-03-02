@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar/components/chat_title.dart';
-import 'package:flutter_calendar/navigation/navigation_keys.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -147,11 +146,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         List<ChatMessage> _messages = [];
         if (snapshot.hasData) {
           List<MessageModel> _fromDB = snapshot.data;
+          // Todo: not working
           for (int i = 0; i < _fromDB.length; i++) {
             bool _isSentByUser = _fromDB[i].sentBy == user.uid;
             bool isFirstMessageFromUser;
             if (i + 1 < _fromDB.length) {
-              if (_fromDB[i + 1].sentBy != user.uid) {
+              if (_fromDB[i + 1].sentBy != _fromDB[i].sentBy) {
                 isFirstMessageFromUser = true;
               } else {
                 isFirstMessageFromUser = false;
@@ -162,6 +162,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             _messages.add(
               ChatMessage(
                 text: _fromDB[i].text,
+                sentBy: widget.chat.memberRoles
+                    .firstWhere((element) => element.uid == _fromDB[i].sentBy),
                 isSentByUser: _isSentByUser,
                 isFirstMessageFromUser: isFirstMessageFromUser,
               ),

@@ -4,6 +4,10 @@ import 'package:flutter_calendar/services/service_locator.dart';
 
 import 'contact_model.dart';
 
+// by extending Role to a string we can store this information in firebase and
+// just just the enum throughout the app
+// it is essentially the same as storing an enum in typescript, the enum can hold a value
+
 enum Role { _from, admin, member, noRole }
 
 extension RoleExtension on Role {
@@ -24,7 +28,11 @@ class MemberModel {
   final String uid;
   final String nickname;
   final Role role;
-  MemberModel({this.uid, this.nickname, this.role});
+  MemberModel({
+    @required this.uid,
+    @required this.nickname,
+    @required this.role,
+  });
 
   factory MemberModel.fromMap({Map<String, dynamic> member, String uid = ''}) {
     UserState userState = locator<UserState>();
@@ -33,6 +41,7 @@ class MemberModel {
     if (userContacts[uid] != null && userContacts[uid].nickname != '') {
       member['displayName'] = userContacts[uid].nickname;
     }
+    // get the download url from firebase storage
     return MemberModel(
       uid: uid,
       nickname: member['displayName'] ?? '',

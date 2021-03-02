@@ -1,9 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/app_state/user_state.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
 // custom lib
 

@@ -38,7 +38,6 @@ class CalendarDB {
       if (result.docs.length != null) {
         WriteBatch batch = _db.batch();
         var eventModels = result.docs.map((event) {
-          print(event.data());
           EventModel eventModel = EventModel.fromMap(event.data());
           // below prevents the event coming up in future queries.
           // It is not a frequently used feature as this query is only used once on a contacts page
@@ -74,6 +73,15 @@ class CalendarDB {
       return events;
     } else {
       return Future<List<EventModel>>.value(null);
+    }
+  }
+
+  void removeUserFromEvent(EventModel event) {
+    // this is the same as create event but no merge
+    User user = _auth.currentUser;
+    CollectionReference ref = _db.collection('events');
+    if (user != null) {
+      ref.doc(event.eventID).set(event.toMap()).then((value) => print('done'));
     }
   }
 

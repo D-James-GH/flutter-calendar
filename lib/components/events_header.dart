@@ -42,12 +42,12 @@ class EventsHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _displayLeadingIcon(context),
-          isListViewOpen
-              ? Text('')
-              : SizedBox(
-                  width: 10,
-                ),
+          _buildLeadingIcon(context),
+          // isListViewOpen
+          //     ? Text('')
+          //     : SizedBox(
+          //         width: 10,
+          //       ),
           ..._buildDate(currentDate, context),
           Expanded(
             child: Text(''),
@@ -58,7 +58,7 @@ class EventsHeader extends StatelessWidget {
     );
   }
 
-  Widget _displayLeadingIcon(BuildContext context) {
+  Widget _buildLeadingIcon(BuildContext context) {
     // no leading button in list view
     if (isListViewOpen) return Text('');
     // if not editing then you can go back to the list view
@@ -109,26 +109,28 @@ class EventsHeader extends StatelessWidget {
     }
     // finally, if the event page is in edit mode; the trailing icon button should
     // save and commit the event form
-    return RaisedButton(
-      onPressed: () => _submitEventForm(context, calendarState),
-      color: Theme.of(context).primaryColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text('Save', style: TextStyle(color: Colors.white)),
-          SizedBox(
-            width: 5,
-          ),
-          Icon(
-            FontAwesomeIcons.save,
-            color: Colors.white,
-            size: 20,
-          ),
-        ],
+    return SizedBox(
+      width: 70,
+      height: 30,
+      child: RaisedButton(
+        onPressed: () => _submitEventForm(context, calendarState),
+        color: Theme.of(context).primaryColor,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: EdgeInsets.all(5),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('Save', style: TextStyle(color: Colors.white)),
+            Icon(
+              FontAwesomeIcons.save,
+              color: Colors.white,
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }

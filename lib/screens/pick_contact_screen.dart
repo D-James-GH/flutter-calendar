@@ -4,7 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 // custom lib
-import '../services/services.dart';
 import '../app_state/user_state.dart';
 import '../models/models.dart';
 import '../components/contact_list_tile.dart';
@@ -70,7 +69,11 @@ class _PickContactScreenState extends State<PickContactScreen> {
   }
 
   List<Widget> _buildAllContacts() {
-    Map<String, UserModel> contacts = Provider.of<UserState>(context).contacts;
+    UserState userState = Provider.of<UserState>(context);
+    if (!userState.isContactsInitialized) {
+      userState.fetchContactsFromDB();
+    }
+    Map<String, UserModel> contacts = userState.contacts;
     return contacts.values.map((contact) {
       return ContactListTile(
         contact: contact,

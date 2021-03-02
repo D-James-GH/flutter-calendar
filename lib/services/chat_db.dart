@@ -112,6 +112,7 @@ class ChatDB {
     Map<String, dynamic> memberUIDs,
   ) async {
     CollectionReference ref = _db.collection('chats');
+    print('from get existing chat');
     Query query = ref;
     for (var k in memberUIDs.keys) {
       query = query.where('memberUIDs.' + k, isEqualTo: true);

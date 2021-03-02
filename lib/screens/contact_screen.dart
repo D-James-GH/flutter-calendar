@@ -67,8 +67,10 @@ class _ContactScreenState extends State<ContactScreen> {
                     child: Column(
                       children: [
                         UserAvatar(
-                          userModel: userState
-                              .contacts[widget.contact.uid], //widget.contact,
+                          imageUrl: userState.contacts[widget.contact.uid]
+                              .profileImageUrl, //widget.contact,
+                          name: userState
+                              .contacts[widget.contact.uid].displayName,
                           size: 34,
                         ),
                         SizedBox(height: 10),

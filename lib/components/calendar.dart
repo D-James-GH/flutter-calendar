@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'weekdays.dart';
+import 'calendar_weekdays.dart';
 import '../app_state/calendar_state.dart';
 import 'calendar_day.dart';
 

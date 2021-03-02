@@ -1,31 +1,82 @@
 import 'package:flutter/material.dart';
-import '../models/models.dart';
+import 'package:flutter_calendar/services/services.dart';
 
-class UserAvatar extends StatelessWidget {
-  final MemberModel userMember;
-  final UserModel userModel;
+class UserAvatar extends StatefulWidget {
+  final String name;
   final double size;
   final bool isLight;
+  final Function onTap;
+  final String uid;
+  final String imageUrl;
+  // final String imageUrl;
 
-  const UserAvatar(
-      {Key key,
-      this.size = 18,
-      this.userMember,
-      this.isLight = false,
-      this.userModel})
-      : super(key: key);
+  const UserAvatar({
+    Key key,
+    this.size = 18,
+    this.name,
+    this.isLight = false,
+    this.onTap,
+    this.uid,
+    this.imageUrl,
+  }) : super(key: key);
+
+  @override
+  _UserAvatarState createState() => _UserAvatarState();
+}
+
+class _UserAvatarState extends State<UserAvatar> {
+  Future<String> _imageUrl;
+  @override
+  void initState() {
+    super.initState();
+    _imageUrl = locator<Storage>().getProfileImageUrl(widget.uid);
+  }
 
   @override
   Widget build(BuildContext context) {
-    // should have user image in but for now it will hold the first letter
+    return GestureDetector(
+      child: widget.imageUrl == null
+          ? FutureBuilder(
+              future: _imageUrl,
+              builder: (BuildContext context, snapshot) {
+                if (snapshot.hasData) {
+                  return _buildAvatarWithImage(snapshot.data);
+                } else {
+                  return _buildAvatarNoImage();
+                }
+              },
+            )
+          : _buildFromUrl(widget.imageUrl),
+      onTap: this.widget.onTap,
+    );
+  }
+
+  Widget _buildFromUrl(String url) {
+    if (url == '') {
+      return _buildAvatarNoImage();
+    } else {
+      return _buildAvatarWithImage(url);
+    }
+  }
+
+  Widget _buildAvatarWithImage(String url) {
     return CircleAvatar(
-      radius: size,
+      backgroundImage: NetworkImage(url),
+      radius: widget.size,
+    );
+  }
+
+  Widget _buildAvatarNoImage() {
+    return CircleAvatar(
+      radius: widget.size,
       child: Text(
-        userMember != null ? userMember.nickname[0] : userModel.displayName[0],
+        widget.name[0],
         style: TextStyle(
-            color: isLight ? Theme.of(context).primaryColor : Colors.white),
+            color:
+                widget.isLight ? Theme.of(context).primaryColor : Colors.white),
       ),
-      backgroundColor: isLight ? Colors.white : Theme.of(context).primaryColor,
+      backgroundColor:
+          widget.isLight ? Colors.white : Theme.of(context).primaryColor,
     );
   }
 }

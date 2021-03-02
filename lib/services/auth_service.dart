@@ -1,11 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_calendar/models/models.dart';
+import 'package:flutter_calendar/services/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final UserDB _userDB = locator<UserDB>();
 
   Future<User> get getCurrentUser async {
     User currentUser = _auth.currentUser;
@@ -27,7 +28,14 @@ class AuthService {
       );
       UserCredential result = await _auth.signInWithCredential(credential);
       User user = result.user;
-      updateUserData(user);
+
+      if (result.additionalUserInfo.isNewUser) {
+        _userDB.updateUserData(UserModel(
+          email: user.email,
+          uid: user.uid,
+          displayName: user.displayName,
+        ));
+      }
       return user;
     } catch (error) {
       print(error);
@@ -50,7 +58,14 @@ class AuthService {
 
       if (_auth.currentUser != null) {
         User firebaseUser = _auth.currentUser;
-        updateUserData(firebaseUser);
+        if (userCredential.additionalUserInfo.isNewUser) {
+          UserModel userModel = UserModel(
+            email: firebaseUser.email,
+            uid: firebaseUser.uid,
+            displayName: firebaseUser.displayName,
+          );
+          _userDB.updateUserData(userModel);
+        }
       }
       return user;
     } on FirebaseAuthException catch (e) {
@@ -92,6 +107,14 @@ class AuthService {
     }
   }
 
+  void updateUserProfile(String name) async {
+    if (_auth.currentUser != null) {
+      await _auth.currentUser.updateProfile(
+        displayName: name,
+      );
+    }
+  }
+
   // Future<User> anonLogin() async {
   //   UserCredential result = await _auth.signInAnonymously();
   //   User user = result.user;
@@ -100,13 +123,10 @@ class AuthService {
   //   return user;
   // }
 
-  Future updateUserData(User user) {
-    DocumentReference usersRef = _db.collection('users').doc(user.uid);
-    return usersRef.set({
-      'uid': user.uid,
-      'displayName': user.displayName,
-      'email': user.email,
-    }, SetOptions(merge: true));
+  Future<void> resetPassword(String email) {
+    return _auth
+        .sendPasswordResetEmail(email: email)
+        .then((value) => print('reset password'));
   }
 
   Future<void> signOut() {

@@ -1,16 +1,18 @@
 # Currently under development
-- Re-doing the design to match the adobe xd 
-- update changed display name all over the app
-- create a sub collection for contacts
-- reset all state on logout
+- reorganise contacts screen code
 
 ## Small Todos
-
 - change firebase rules
+- be able to refresh/force update
+- calendar
+    - admin should be able to delete attendees  
+    
+- initial display name on contact page
 
 ## Features to impliment
 
 - calendar
+    - admin should be able to delete attendees   
     - Custom colors for events
     - location of the event
     - multi-day events
@@ -19,7 +21,6 @@
     - Allow users to send images
     - move messages to real-time database
 - User settings, which should include
+    - block other users
     - Changing the font size to bigger
-    - Edit display name and details
-    - Password changing and recovery
-    - Add profile picture
+    - Password changing 

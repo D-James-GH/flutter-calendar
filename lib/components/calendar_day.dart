@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 // custom files
 import '../app_state/calendar_state.dart';
 import '../models/event_model.dart';
+import '../helpers/extension_methods.dart';
 
 class CalendarDay extends StatefulWidget {
   final DateTime dateObject;
@@ -17,21 +18,19 @@ class CalendarDay extends StatefulWidget {
 }
 
 class _CalendarDayState extends State<CalendarDay> {
-  @override
-  void initState() {
-    super.initState();
-    // fetch any events from the database
-  }
+  bool _isToday = false;
 
   @override
   Widget build(BuildContext context) {
+    _isToday = false;
     String dateID;
     CalendarState calendarState = Provider.of<CalendarState>(context);
     dateID = calendarState.calcDateID(widget.dateObject);
     // Todo: this should be in initstate
     calendarState.fetchEventFromDB(dateID);
     TextStyle dateNumberStyle;
-    if (calendarState.currentSelectedDate == widget.dateObject) {
+    if (widget.dateObject.isSameDate(DateTime.now())) {
+      _isToday = true;
       dateNumberStyle = TextStyle(
           color: Theme.of(context).primaryColor,
           fontWeight: FontWeight.bold,
@@ -49,39 +48,49 @@ class _CalendarDayState extends State<CalendarDay> {
         width: 43,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: calendarState.currentSelectedDate == widget.dateObject
-              ? Colors.white
-              : Colors.transparent,
+          color: _isToday ? Colors.white : Colors.transparent,
+          border: calendarState.currentSelectedDate == widget.dateObject
+              ? Border.all(color: Colors.white, width: 2)
+              : null,
         ),
-        child: Stack(
-          children: [
-            Center(
-              child: Text(
-                widget.dateObject.day.toString(),
-                style: dateNumberStyle,
-              ),
-            ),
-            Align(
-              alignment: Alignment(0, 0.7),
-              child: Container(
-                height: 6,
-                width: 35,
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  direction: Axis.horizontal,
-                  spacing: 1,
-                  clipBehavior: Clip.hardEdge,
-                  children: calendarState.events[dateID] != null
-                      // if the day has events. The color must change is day if the day is selected.
-                      ? _eventDot(
-                          calendarState.events[dateID],
-                          calendarState.currentSelectedDate ==
-                              widget.dateObject)
-                      : [Text('')],
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            border: _isToday
+                ? Border.all(color: Theme.of(context).primaryColor)
+                : null,
+            shape: BoxShape.circle,
+          ),
+          child: Stack(
+            children: [
+              Center(
+                child: Text(
+                  widget.dateObject.day.toString(),
+                  style: dateNumberStyle,
                 ),
               ),
-            )
-          ],
+              Align(
+                alignment: Alignment(0, 0.7),
+                child: Container(
+                  height: 6,
+                  width: 35,
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    direction: Axis.horizontal,
+                    spacing: 1,
+                    clipBehavior: Clip.hardEdge,
+                    children: calendarState.events[dateID] != null
+                        // if the day has events. The color must change is day if the day is selected.
+                        ? _eventDot(
+                            calendarState.events[dateID],
+                            calendarState.currentSelectedDate ==
+                                widget.dateObject)
+                        : [Container(child: null)],
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -94,8 +103,7 @@ class _CalendarDayState extends State<CalendarDay> {
               width: 6,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color:
-                    isSelected ? Theme.of(context).primaryColor : Colors.white,
+                color: _isToday ? Theme.of(context).primaryColor : Colors.white,
               ),
               child: null,
             ))

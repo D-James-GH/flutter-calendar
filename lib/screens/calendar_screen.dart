@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/app_state/user_state.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../app_state/calendar_state.dart';
@@ -13,6 +14,16 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   bool _isPanelOpened = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  void _fetchUserData() async {
+    await Provider.of<UserState>(context, listen: false).fetchUserFromDB();
+  }
 
   @override
   Widget build(BuildContext context) {

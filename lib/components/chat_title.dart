@@ -13,8 +13,7 @@ class ChatTitle extends StatelessWidget {
     UserState _userState = Provider.of<UserState>(context);
     List membersToDisplay = [];
     members.forEach((member) {
-      if (members.length > 1 &&
-          _userState.currentUser.displayName != member.nickname) {
+      if (members.length > 1 && _userState.currentUser.uid != member.uid) {
         // if the chat is with other people then do not show the current user
         membersToDisplay.add(member.nickname);
       } else if (members.length == 1) {

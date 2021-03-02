@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar/components/user_avatar.dart';
 import 'package:flutter_calendar/models/member_model.dart';
@@ -25,9 +24,6 @@ class ListMemberAvatars extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      // mainAxisAlignment: members.length <= 2
-      //     ? MainAxisAlignment.center
-      //     : MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: _buildMemberAvatars(context),
     );
@@ -36,7 +32,10 @@ class ListMemberAvatars extends StatelessWidget {
   List<Widget> _buildMemberAvatars(BuildContext context) {
     UserState userState = Provider.of<UserState>(context);
     List<Widget> memberAvatars = members.map((member) {
+      // print(member.profileImageUrl);
       if (member.uid != userState.currentUser.uid) {
+        // don't show the current user
+        // print(member.profileImageUrl);
         return Container(
           width: 36,
           margin: hasMargin
@@ -46,20 +45,19 @@ class ListMemberAvatars extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              UserAvatar(userMember: member, isLight: isLight),
-              showNames == true
-                  ? Text(
-                      member.nickname,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isLight
-                            ? Colors.white
-                            : Theme.of(context).primaryColor,
-                      ),
-                    )
-                  : Container(),
+              UserAvatar(
+                  name: member.nickname, uid: member.uid, isLight: isLight),
+              if (showNames)
+                Text(
+                  member.nickname,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color:
+                        isLight ? Colors.white : Theme.of(context).primaryColor,
+                  ),
+                ),
             ],
           ),
         );

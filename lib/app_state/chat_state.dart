@@ -32,7 +32,7 @@ class ChatState extends ChangeNotifier {
         uid: member.uid,
       ));
     });
-    // add the current use to the chat
+    // add the current user to the chat
     memberRoles.add(
       MemberModel(
           uid: currentUser.uid,
@@ -46,7 +46,10 @@ class ChatState extends ChangeNotifier {
     // it will use the length of the memberUIDs to make sure it will only
     // check for chats with ONLY the incoming members.
     ChatModel chat;
+    String newChatID;
     ChatModel existingChat = await _chatDB.getExistingChat(memberUIDs);
+    print(existingChat);
+
     if (existingChat == null) {
       // currently creating chat does not exist
       // create a temporary chat, leave the chatID blank so that firebase generates the id
@@ -58,8 +61,24 @@ class ChatState extends ChangeNotifier {
         memberRoles: memberRoles,
         isVisibleTo: isVisibleTo,
       );
+      // create chat will return the generated firestore id.
+      // Because the chatModel is an immutable class we need to make a new
+      // class with the generated chat id
+      newChatID = await _chatDB.createChat(chat);
+      // create another new chat with the correctly generated document id
+      chat = ChatModel(
+        chatID: newChatID,
+        groupName: chat.groupName,
+        groupSize: chat.groupSize,
+        latestMessage: chat.latestMessage,
+        memberUIDs: chat.memberUIDs,
+        memberRoles: chat.memberRoles,
+        isVisibleTo: chat.isVisibleTo,
+      );
     } else {
       chat = ChatModel(
+        chatID: existingChat.chatID,
+        latestMessageTime: existingChat.latestMessageTime,
         groupName: existingChat.groupName,
         groupSize: existingChat.groupSize,
         latestMessage: existingChat.latestMessage,
@@ -69,18 +88,6 @@ class ChatState extends ChangeNotifier {
       );
     }
 
-    String newChatID = await _chatDB.createChat(chat);
-
-    // create another new chat with the correctly generated document id
-    chat = ChatModel(
-      chatID: newChatID,
-      groupName: chat.groupName,
-      groupSize: chat.groupSize,
-      latestMessage: chat.latestMessage,
-      memberUIDs: chat.memberUIDs,
-      memberRoles: chat.memberRoles,
-      isVisibleTo: chat.isVisibleTo,
-    );
     return chat;
   }
 
@@ -94,4 +101,6 @@ class ChatState extends ChangeNotifier {
       ),
     );
   }
+
+  void reset() {}
 }

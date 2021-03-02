@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/rendering.dart';
 
@@ -31,7 +30,6 @@ class MyCalendarApp extends StatelessWidget {
         ChangeNotifierProvider<UserState>(
             create: (context) => locator<UserState>()),
         ChangeNotifierProvider<ChatState>(create: (context) => ChatState()),
-        StreamProvider<User>.value(value: AuthService().user),
       ],
       child: MaterialApp(
         navigatorObservers: [

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/app_state/user_state.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
 // custom lib
 import '../navigation/home_navigator.dart';
@@ -38,25 +36,37 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints:
-              BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+      body: GestureDetector(
+        onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus &&
+              currentFocus.focusedChild != null) {
+            currentFocus.focusedChild.unfocus();
+          }
+        },
+        behavior: HitTestBehavior.translucent,
+        child: SingleChildScrollView(
           child: Container(
+            constraints:
+                BoxConstraints(minHeight: MediaQuery.of(context).size.height),
             padding: EdgeInsets.all(30),
             decoration: BoxDecoration(),
             child: Center(
               child: Column(
+                mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   FlutterLogo(
                     size: 150,
                   ),
+
+                  SizedBox(height: 20),
                   Text(
                     'Login to Start',
                     textAlign: TextAlign.center,
                   ),
+                  SizedBox(height: 20),
                   // email sign in -------------
                   Form(
                     key: _formKey,
@@ -77,16 +87,30 @@ class _LoginState extends State<Login> {
                                 })),
                         SizedBox(height: 20),
                         ..._showRegisterForm(),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(),
+                            ),
+                            GestureDetector(
+                              child: Text('Forgotten password?'),
+                              onTap: _resetPassword,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
                         _styledSignInBtn('Sign In', false),
                         _styledSignInBtn('Register', true),
                       ],
                     ),
                   ),
                   // ---------------------------
+                  SizedBox(height: 20),
                   Text(
                     '- OR -',
                     textAlign: TextAlign.center,
                   ),
+                  SizedBox(height: 20),
                   LoginIconButton(
                     navigateToHome: navigateToHome,
                     icon: FontAwesomeIcons.google,
@@ -220,8 +244,7 @@ class _LoginState extends State<Login> {
   }
 
   void navigateToHome() async {
-    print('nevigatin....');
-    await Provider.of<UserState>(context, listen: false).fetchUserFromDB();
+    // await Provider.of<UserState>(context, listen: false).fetchUserFromDB();
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (_) => Home()),
     );
@@ -232,6 +255,46 @@ class _LoginState extends State<Login> {
     // Clean up the controller when the widget is removed from the
     // widget tree.
     super.dispose();
+  }
+
+  void _resetPassword() async {
+    if (_email != '' && _email != null) {
+      await locator<AuthService>().resetPassword(_email);
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return Dialog(
+            child: Container(
+              height: 150,
+              padding: EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+              child: Column(
+                children: [
+                  Text(
+                    'An email has been sent to $_email',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.black87, fontSize: 18),
+                  ),
+                  Expanded(
+                    child: Container(),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(),
+                      ),
+                      TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Text('Confirm'))
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
   }
 }
 

@@ -16,11 +16,6 @@ class _AddContactFormState extends State<AddContactForm> {
   bool _contactNotFound = false;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -36,7 +31,8 @@ class _AddContactFormState extends State<AddContactForm> {
                       }
                     }),
                     controller: _emailController,
-                    decoration: InputDecoration(hintText: "Add a Contact"),
+                    decoration:
+                        InputDecoration(hintText: "Add a contact by email..."),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                 ),

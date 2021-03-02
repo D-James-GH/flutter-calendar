@@ -67,7 +67,8 @@ class AllChatScreen extends StatelessWidget {
                     MemberModel contact = chats[i].memberRoles.firstWhere(
                         (element) => element.uid != userState.currentUser.uid);
                     leadingIcon = UserAvatar(
-                      userMember: contact,
+                      uid: contact.uid,
+                      name: contact.nickname,
                     );
                   } else {
                     leadingIcon = Container(

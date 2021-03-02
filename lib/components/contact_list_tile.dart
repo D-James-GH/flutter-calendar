@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/components/user_avatar.dart';
 import 'package:flutter_calendar/models/models.dart';
 
 class ContactListTile extends StatelessWidget {
@@ -10,9 +11,9 @@ class ContactListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: CircleAvatar(
-        child: Text(contact.displayName[0]),
-        backgroundColor: Colors.teal,
+      leading: UserAvatar(
+        name: contact.displayName,
+        uid: contact.uid,
       ),
       title: Text(contact.displayName),
       onTap: onTapFunc,

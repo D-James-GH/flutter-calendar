@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/app_state/user_state.dart';
 import 'package:flutter_calendar/models/models.dart';
-import 'package:provider/provider.dart';
 
 class ChatMessage extends StatelessWidget {
-  // final String _name = 'Your Name';
   final String text;
   final AnimationController animationController;
   final bool isSentByUser;
+  final MemberModel sentBy;
   final bool isFirstMessageFromUser;
-  ChatMessage(
-      {this.text,
-      this.animationController,
-      this.isSentByUser,
-      this.isFirstMessageFromUser});
+  ChatMessage({
+    this.text,
+    this.animationController,
+    this.isSentByUser,
+    this.isFirstMessageFromUser,
+    this.sentBy,
+  });
 
   Widget build(BuildContext context) {
-    UserModel user = Provider.of<UserState>(context).currentUser;
-
+    print(sentBy.uid);
+    print(sentBy.nickname);
+    print(isFirstMessageFromUser);
     return Container(
       margin: EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -31,13 +32,10 @@ class ChatMessage extends StatelessWidget {
               isFirstMessageFromUser
                   ? Container(
                       margin: EdgeInsets.symmetric(horizontal: 4),
-                      child: Text(user.displayName,
+                      child: Text(sentBy.nickname,
                           style: TextStyle(fontSize: 12, height: 0.9)),
                     )
-                  : Container(
-                      // Todo: check user id with the chats to see if any nick names have been created
-                      child: null,
-                    ),
+                  : Container(child: null),
               Container(
                 constraints: BoxConstraints(
                     minWidth: 50,
@@ -67,10 +65,11 @@ class ChatMessage extends StatelessWidget {
                 ),
                 child: Text(
                   text,
-                  style: TextStyle(
-                      fontSize: 17,
-                      color: isSentByUser ? Colors.white : Colors.black),
                   textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],

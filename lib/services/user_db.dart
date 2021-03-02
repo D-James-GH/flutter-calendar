@@ -4,13 +4,13 @@ import 'package:flutter_calendar/models/contact_model.dart';
 import 'package:flutter_calendar/models/models.dart';
 
 class UserDB {
-  final CollectionReference userRef =
+  final CollectionReference collectionRef =
       FirebaseFirestore.instance.collection('users');
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<List<UserModel>> getUserByEmail(String email) {
     email = email.toLowerCase();
-    return userRef.where('email', isEqualTo: email).get().then((value) {
+    return collectionRef.where('email', isEqualTo: email).get().then((value) {
       if (value.docs.isNotEmpty) {
         return value.docs.map((e) => UserModel.fromMap(e.data())).toList();
       } else {
@@ -25,19 +25,31 @@ class UserDB {
   }
 
   Future<UserModel> getUser(String uid) {
-    return userRef.doc(uid).get().then((doc) => UserModel.fromMap(doc.data()));
+    return collectionRef
+        .doc(uid)
+        .get()
+        .then((doc) => UserModel.fromMap(doc.data()));
   }
 
-  void updateNickname(ContactModel contact) {
-    userRef
+  void updateContact(ContactModel contact) {
+    collectionRef
         .doc(_auth.currentUser.uid)
         .collection('contacts')
         .doc('contacts')
         .set(contact.toMap(), SetOptions(merge: true));
   }
 
+  void deleteContact(String contactUid, String uid) {
+    // should delete "contact" from the user with the specified uid
+    collectionRef
+        .doc(uid)
+        .collection('contacts')
+        .doc('contacts')
+        .update({contactUid: FieldValue.delete()});
+  }
+
   Future<Map<String, ContactModel>> getContacts() {
-    return userRef
+    return collectionRef
         .doc(_auth.currentUser.uid)
         .collection('contacts')
         .doc('contacts')
@@ -45,7 +57,7 @@ class UserDB {
         .then((contacts) {
       Map<String, ContactModel> output = {};
       contacts.data().forEach((String key, value) {
-        output[key] = ContactModel(userID: key, nickname: value['nickname']);
+        output[key] = ContactModel.fromMap(data: value, uid: key);
       });
       return output;
     });
@@ -56,7 +68,7 @@ class UserDB {
     // receiving user information
 
     User loggedInUser = _auth.currentUser;
-    userRef
+    collectionRef
         .doc(loggedInUser.uid)
         .collection('contacts')
         .doc('contacts')
@@ -71,5 +83,41 @@ class UserDB {
     // } else {
     //   return null;
     // }
+  }
+
+  void sendReply(ContactModel contact) {
+    ContactModel user = ContactModel(
+      accepted: contact.accepted,
+      sent: contact.sent,
+      uid: _auth.currentUser.uid,
+      nickname: _auth.currentUser.displayName,
+    );
+    collectionRef
+        .doc(contact.uid)
+        .collection('contacts')
+        .doc('contacts')
+        .set(user.toMap(), SetOptions(merge: true))
+        .then((value) => print('rspv'));
+  }
+
+  void sendInvite(ContactModel contact) {
+    // create current user as a contact
+    // but set the sent to false and the accepted to false
+    ContactModel user = ContactModel(
+      accepted: false,
+      sent: false,
+      uid: _auth.currentUser.uid,
+      nickname: _auth.currentUser.displayName,
+    );
+    collectionRef
+        .doc(contact.uid)
+        .collection('contacts')
+        .doc('contacts')
+        .set(user.toMap(), SetOptions(merge: true));
+  }
+
+  Future updateUserData(UserModel user) {
+    DocumentReference doc = collectionRef.doc(user.uid);
+    return doc.set(user.toMap(), SetOptions(merge: true));
   }
 }

@@ -35,7 +35,11 @@ class _TimeFormFieldState extends FormFieldState<TimeOfDay> {
 
   Widget _constructWidget() {
     return RaisedButton(
-      child: Text(_time.format(context)),
+      color: Theme.of(context).primaryColor,
+      child: Text(
+        _time.format(context),
+        style: TextStyle(color: Colors.white),
+      ),
       onPressed: () => _selectTime(),
     );
   }

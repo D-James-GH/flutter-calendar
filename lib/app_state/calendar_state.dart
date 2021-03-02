@@ -60,11 +60,32 @@ class CalendarState extends ChangeNotifier {
     return events;
   }
 
-  Future<void> deleteEvent({String eventID, String dateID}) async {
-    // TODO: implement delete event in app
-    await _calendarDB.deleteEvent(eventID);
+  Future<void> deleteEvent(EventModel event,
+      {bool isAdmin = false, String uid}) async {
+    // check the user role, should not be able to delete event if not the owner
+    if (isAdmin) {
+      await _calendarDB.deleteEvent(event.eventID);
+    } else {
+      print('removing user');
+      // update the event without the current user
+      var memberRoles = event.memberRoles;
+      memberRoles.removeWhere((element) => element.uid == uid);
+
+      var changedEvent = EventModel(
+        dateID: event.dateID,
+        endTimestamp: event.endTimestamp,
+        eventID: event.eventID,
+        isPast: event.isPast,
+        memberRoles: memberRoles,
+        startTimestamp: event.startTimestamp,
+        notes: event.notes,
+        title: event.title,
+      );
+      print(changedEvent.memberUIDs);
+      _calendarDB.removeUserFromEvent(changedEvent);
+    }
     var _currentEvents = _events;
-    _currentEvents[dateID].removeWhere((e) => e.eventID == eventID);
+    _currentEvents[event.dateID].removeWhere((e) => e.eventID == event.eventID);
     notifyListeners();
   }
 
@@ -83,5 +104,11 @@ class CalendarState extends ChangeNotifier {
       _currentEvents[dateID][indexOfEvent] = event;
     }
     notifyListeners();
+  }
+
+  void reset() {
+    _events = {};
+    _currentDate = DateTime.now();
+    editFormEvent = EventModel();
   }
 }

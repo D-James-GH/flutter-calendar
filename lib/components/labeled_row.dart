@@ -29,8 +29,6 @@ class LabeledRow extends StatelessWidget {
             child: Container(
               padding: EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
-                //   border: Border.all(
-                // color: Theme.of(context).primaryColor.withOpacity(0.5),
                 border: Border(
                   bottom: BorderSide(
                     color: Theme.of(context).primaryColor.withOpacity(0.3),

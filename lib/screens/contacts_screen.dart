@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_calendar/app_state/calendar_state.dart';
 import 'package:flutter_calendar/app_state/chat_state.dart';
 import 'package:flutter_calendar/components/contact_list_tile.dart';
 import 'package:flutter_calendar/navigation/navigation_keys.dart';
 import 'package:flutter_calendar/screens/profile_screen.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 // custom lib
@@ -30,7 +30,6 @@ class ContactsScreen extends StatefulWidget {
 class _ContactsScreenState extends State<ContactsScreen> {
   final AuthService auth = AuthService();
   UserState userState;
-  Map<String, UserModel> _contacts;
   UserModel currentUser;
 
   @override
@@ -38,23 +37,61 @@ class _ContactsScreenState extends State<ContactsScreen> {
     super.initState();
     userState = Provider.of<UserState>(context, listen: false);
     currentUser = userState.currentUser;
-    userState.fetchContactsFromDB();
+    if (!userState.isContactsInitialized) {
+      userState.fetchContactsFromDB();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    _contacts = Provider.of<UserState>(context).contacts;
     return Scaffold(
       appBar: AppBar(
         leading: Container(
           padding: EdgeInsets.all(10),
-          child: CircleAvatar(
-            child: Text('D'),
-            backgroundColor: Colors.pink,
+          child: GestureDetector(
+            onTap: _gotoProfile,
+            child: currentUser.profileImageUrl != '' &&
+                    currentUser.profileImageUrl != null
+                ? CircleAvatar(
+                    backgroundImage: NetworkImage(currentUser.profileImageUrl),
+                  )
+                : CircleAvatar(
+                    child: Text(
+                      currentUser.displayName[0],
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Theme.of(context).accentColor,
+                  ),
           ),
         ),
         title: Text("${currentUser.displayName}'s Contacts"),
         actions: <Widget>[
+          InkWell(
+              child: Stack(
+                alignment: AlignmentDirectional.center,
+                children: [
+                  FaIcon(FontAwesomeIcons.users),
+                  if (userState.pendingContacts.length != 0)
+                    Positioned(
+                      right: 0,
+                      top: 2,
+                      child: Container(
+                        padding: EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.red,
+                        ),
+                        child: Text(
+                          userState.pendingContacts.length.toString(),
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              onTap: _showPendingContacts),
           PopupMenuButton<OptionsMenu>(
             onSelected: (option) => handlePopupMenu(option, context),
             itemBuilder: (BuildContext context) =>
@@ -135,11 +172,111 @@ class _ContactsScreenState extends State<ContactsScreen> {
   }
 
   void logout(BuildContext context) async {
+    // reset state
+    Provider.of<CalendarState>(context, listen: false).reset();
+    Provider.of<ChatState>(context, listen: false).reset();
+    userState.reset();
     await auth.signOut();
-    // userState.dispose();
-    // Provider.of<CalendarState>(context, listen: false).dispose();
-    // Provider.of<ChatState>(context, listen: false).dispose();
+
     Navigator.of(context, rootNavigator: true)
         .pushNamedAndRemoveUntil('/', (route) => false);
+  }
+
+  void _showPendingContacts() {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            height: 200,
+            child: userState.pendingContacts.length == 0
+                ? Text('No pending contacts')
+                : ListView.builder(
+                    itemCount: userState.pendingContacts.length,
+                    itemBuilder: (BuildContext context, i) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Theme.of(context)
+                                  .primaryColor
+                                  .withOpacity(0.1),
+                            ),
+                          ),
+                        ),
+                        height: 60,
+                        width: double.infinity,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                child: Center(
+                                    child: Text(
+                                  userState.pendingContacts[i].nickname,
+                                  style: TextStyle(fontSize: 30),
+                                )),
+                              ),
+                            ),
+                            AcceptDeclineButton(
+                              onTap: () => userState.confirmContact(
+                                  userState.pendingContacts[i],
+                                  confirm: true),
+                              color: Colors.green,
+                              icon: FaIcon(
+                                FontAwesomeIcons.check,
+                                size: 30,
+                                color: Colors.white,
+                              ),
+                            ),
+                            AcceptDeclineButton(
+                              onTap: () => userState.confirmContact(
+                                  userState.pendingContacts[i],
+                                  confirm: false),
+                              color: Colors.red,
+                              icon: FaIcon(
+                                FontAwesomeIcons.times,
+                                size: 30,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class AcceptDeclineButton extends StatelessWidget {
+  final Color color;
+  final Widget icon;
+  final Function onTap;
+  const AcceptDeclineButton({Key key, this.color, this.icon, this.onTap})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        onTap();
+        Navigator.of(context).pop();
+      },
+      child: Container(
+        height: double.infinity,
+        width: 60,
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: color,
+        ),
+        child: Center(
+          child: icon,
+        ),
+      ),
+    );
   }
 }
