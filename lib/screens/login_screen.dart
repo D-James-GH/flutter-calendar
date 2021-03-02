@@ -57,10 +57,10 @@ class _LoginState extends State<Login> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  FlutterLogo(
-                    size: 150,
+                  Image(
+                    image: AssetImage('assets/images/calendar_app_icon.png'),
+                    height: 150,
                   ),
-
                   SizedBox(height: 20),
                   Text(
                     'Login to Start',
@@ -187,7 +187,7 @@ class _LoginState extends State<Login> {
     } else {
       if (!_isRegistering) {
         button = RaisedButton(
-          color: Colors.lightBlue,
+          color: Theme.of(context).primaryColor,
           child: btnBody(text),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
@@ -200,7 +200,7 @@ class _LoginState extends State<Login> {
         );
       } else {
         button = RaisedButton(
-          color: Colors.lightBlue,
+          color: Theme.of(context).primaryColor,
           child: btnBody('Register Now'),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
@@ -304,7 +304,7 @@ class LoginIconButton extends StatelessWidget {
   final Function loginMethod;
   final Function navigateToHome;
 
-  const LoginIconButton(
+  LoginIconButton(
       {Key key, this.icon, this.loginMethod, @required this.navigateToHome})
       : super(key: key);
 
@@ -312,7 +312,7 @@ class LoginIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Ink(
       decoration: const ShapeDecoration(
-        color: Colors.lightBlue,
+        color: Color(0xff3AAAB7),
         shape: CircleBorder(),
       ),
       child: IconButton(

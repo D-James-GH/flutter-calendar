@@ -10,6 +10,9 @@
 - initial display name on contact page
 
 ## Features to impliment
+- push notifications for:
+    - events
+    - messages
 
 - calendar
     - admin should be able to delete attendees   
